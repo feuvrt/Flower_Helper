@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { getPlants } from '../utils/plants';
 import { todayIso } from '../utils/dates';
+import { DEFAULT_REMINDER_TIME } from '../utils/reminders';
 import type { UserPlant } from '../types/plant';
 
 type CollectionFormProps = {
@@ -23,9 +24,11 @@ export const CollectionForm = ({ initialPlantId, existingPlant, duplicateWarning
   const [lastWateredAt, setLastWateredAt] = useState(existingPlant?.lastWateredAt ?? todayIso());
   const [wateringIntervalDays, setWateringIntervalDays] = useState(String(existingPlant?.wateringIntervalDays ?? selectedPlant.watering.intervalDays));
   const [wateringReminderEnabled, setWateringReminderEnabled] = useState(existingPlant?.wateringReminderEnabled ?? true);
+  const [wateringReminderTime, setWateringReminderTime] = useState(existingPlant?.wateringReminderTime ?? DEFAULT_REMINDER_TIME);
   const [lastRepottedAt, setLastRepottedAt] = useState(existingPlant?.lastRepottedAt ?? todayIso());
   const [repottingIntervalMonths, setRepottingIntervalMonths] = useState(String(existingPlant?.repottingIntervalMonths ?? selectedPlant.repotting.intervalMonths));
   const [repottingReminderEnabled, setRepottingReminderEnabled] = useState(existingPlant?.repottingReminderEnabled ?? true);
+  const [repottingReminderTime, setRepottingReminderTime] = useState(existingPlant?.repottingReminderTime ?? DEFAULT_REMINDER_TIME);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const handlePlantChange = (newPlantId: string) => {
@@ -60,9 +63,11 @@ export const CollectionForm = ({ initialPlantId, existingPlant, duplicateWarning
       lastWateredAt: lastWateredAt || addedAt,
       wateringIntervalDays: wateringDays,
       wateringReminderEnabled,
+      wateringReminderTime,
       lastRepottedAt: lastRepottedAt || addedAt,
       repottingIntervalMonths: repottingMonths,
       repottingReminderEnabled,
+      repottingReminderTime,
     });
   };
 
@@ -108,6 +113,10 @@ export const CollectionForm = ({ initialPlantId, existingPlant, duplicateWarning
           </select>
         </label>
         <label>
+          Время напоминания о поливе
+          <input type="time" value={wateringReminderTime} onChange={(event) => setWateringReminderTime(event.target.value)} />
+        </label>
+        <label>
           Дата последней пересадки
           <input type="date" value={lastRepottedAt} onInput={(event) => setLastRepottedAt(event.currentTarget.value)} onChange={(event) => setLastRepottedAt(event.target.value)} />
         </label>
@@ -116,23 +125,27 @@ export const CollectionForm = ({ initialPlantId, existingPlant, duplicateWarning
           <input min="1" type="number" value={repottingIntervalMonths} onChange={(event) => setRepottingIntervalMonths(event.target.value)} />
           {errors.repottingIntervalMonths && <span className="field-error">{errors.repottingIntervalMonths}</span>}
         </label>
+        <label>
+          Время напоминания о пересадке
+          <input type="time" value={repottingReminderTime} onChange={(event) => setRepottingReminderTime(event.target.value)} />
+        </label>
       </div>
-
-      <label>
-        Заметки
-        <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Например: стоит на восточном окне, любит душ раз в месяц" />
-      </label>
 
       <label className="checkbox-line">
         <input type="checkbox" checked={repottingReminderEnabled} onChange={(event) => setRepottingReminderEnabled(event.target.checked)} />
         Включить напоминания о пересадке
       </label>
 
+      <label>
+        Заметки
+        <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Например: стоит на восточном окне, любит душ раз в месяц" />
+      </label>
+
       <div className="form-actions">
-        <button className="button button--ghost" type="button" onClick={onCancel}>
+        <button className="button button--secondary" type="button" onClick={onCancel}>
           Отмена
         </button>
-        <button className="button" type="submit">
+        <button className="button button--primary" type="submit">
           {existingPlant ? 'Сохранить изменения' : 'Добавить растение'}
         </button>
       </div>

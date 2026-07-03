@@ -1,29 +1,28 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../App';
-import { getPlants } from '../utils/plants';
 import { getPlantRecommendations } from '../services/recommendationService';
 import type { RecommendationAnswers, RecommendationResult } from '../types/recommendation';
+import { getPlants } from '../utils/plants';
 
-const STORAGE_KEY = 'plantCareRecommendationAnswers';
-
-const defaultAnswers: RecommendationAnswers = {
-  experience: 'beginner',
-  light: 'unknown',
-  hasPetsOrKids: true,
-  wateringPreference: 'weekly',
-  priority: 'easy_care',
-  temperature: 'medium',
-  considerOwnedPlants: true,
+type RecommendationFormAnswers = {
+  experience: RecommendationAnswers['experience'] | '';
+  light: RecommendationAnswers['light'] | '';
+  hasPetsOrKids: '' | 'yes' | 'no';
+  wateringPreference: RecommendationAnswers['wateringPreference'] | '';
+  priority: RecommendationAnswers['priority'] | '';
+  temperature: RecommendationAnswers['temperature'] | '';
+  considerOwnedPlants: boolean;
 };
 
-const readSavedAnswers = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as RecommendationAnswers) : null;
-  } catch {
-    return null;
-  }
+const defaultAnswers: RecommendationFormAnswers = {
+  experience: '',
+  light: '',
+  hasPetsOrKids: '',
+  wateringPreference: '',
+  priority: '',
+  temperature: '',
+  considerOwnedPlants: true,
 };
 
 const statusLabels: Record<RecommendationResult['status'], string> = {
@@ -33,31 +32,63 @@ const statusLabels: Record<RecommendationResult['status'], string> = {
 };
 
 export const RecommendationsPage = () => {
-  const savedAnswers = useMemo(() => readSavedAnswers(), []);
-  const [answers, setAnswers] = useState<RecommendationAnswers>(savedAnswers ?? defaultAnswers);
-  const [showResults, setShowResults] = useState(Boolean(savedAnswers));
+  const [answers, setAnswers] = useState<RecommendationFormAnswers>(defaultAnswers);
+  const [showResults, setShowResults] = useState(false);
+  const [formError, setFormError] = useState('');
   const { collection, openCollectionForm } = useAppContext();
   const plants = getPlants();
 
-  const results = useMemo(() => {
-    if (!showResults) return [];
-    return getPlantRecommendations(plants, collection, answers);
-  }, [answers, collection, plants, showResults]);
+  const recommendationAnswers = useMemo<RecommendationAnswers | null>(() => {
+    if (
+      !answers.experience ||
+      !answers.light ||
+      !answers.hasPetsOrKids ||
+      !answers.wateringPreference ||
+      !answers.priority ||
+      !answers.temperature
+    ) {
+      return null;
+    }
 
-  const updateAnswer = <K extends keyof RecommendationAnswers>(key: K, value: RecommendationAnswers[K]) => {
+    return {
+      experience: answers.experience,
+      light: answers.light,
+      hasPetsOrKids: answers.hasPetsOrKids === 'yes',
+      wateringPreference: answers.wateringPreference,
+      priority: answers.priority,
+      temperature: answers.temperature,
+      considerOwnedPlants: answers.considerOwnedPlants,
+    };
+  }, [answers]);
+
+  const results = useMemo(() => {
+    if (!showResults || !recommendationAnswers) return [];
+    return getPlantRecommendations(plants, collection, recommendationAnswers);
+  }, [collection, plants, recommendationAnswers, showResults]);
+
+  const updateAnswer = <K extends keyof RecommendationFormAnswers>(key: K, value: RecommendationFormAnswers[K]) => {
     setAnswers((current) => ({ ...current, [key]: value }));
+    setShowResults(false);
+    setFormError('');
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+
+    if (!recommendationAnswers) {
+      setFormError('Заполните все вопросы анкеты, чтобы получить подбор растений.');
+      setShowResults(false);
+      return;
+    }
+
+    setFormError('');
     setShowResults(true);
   };
 
   const handleReset = () => {
-    localStorage.removeItem(STORAGE_KEY);
     setAnswers(defaultAnswers);
     setShowResults(false);
+    setFormError('');
   };
 
   return (
@@ -74,7 +105,12 @@ export const RecommendationsPage = () => {
           <div className="form-grid">
             <label>
               Опыт ухода за растениями
-              <select value={answers.experience} onChange={(event) => updateAnswer('experience', event.target.value as RecommendationAnswers['experience'])}>
+              <select
+                value={answers.experience}
+                required
+                onChange={(event) => updateAnswer('experience', event.target.value as RecommendationFormAnswers['experience'])}
+              >
+                <option value="" disabled>Выберите опыт</option>
                 <option value="beginner">Новичок</option>
                 <option value="some_experience">Есть небольшой опыт</option>
                 <option value="advanced">Опытный цветовод</option>
@@ -83,7 +119,12 @@ export const RecommendationsPage = () => {
 
             <label>
               Освещение дома
-              <select value={answers.light} onChange={(event) => updateAnswer('light', event.target.value as RecommendationAnswers['light'])}>
+              <select
+                value={answers.light}
+                required
+                onChange={(event) => updateAnswer('light', event.target.value as RecommendationFormAnswers['light'])}
+              >
+                <option value="" disabled>Выберите освещение</option>
                 <option value="bright_indirect">Яркий рассеянный свет</option>
                 <option value="partial_shade">Полутень</option>
                 <option value="shade">Тень</option>
@@ -93,7 +134,12 @@ export const RecommendationsPage = () => {
 
             <label>
               Есть ли дома животные или маленькие дети
-              <select value={answers.hasPetsOrKids ? 'yes' : 'no'} onChange={(event) => updateAnswer('hasPetsOrKids', event.target.value === 'yes')}>
+              <select
+                value={answers.hasPetsOrKids}
+                required
+                onChange={(event) => updateAnswer('hasPetsOrKids', event.target.value as RecommendationFormAnswers['hasPetsOrKids'])}
+              >
+                <option value="" disabled>Выберите ответ</option>
                 <option value="yes">Да</option>
                 <option value="no">Нет</option>
               </select>
@@ -101,7 +147,12 @@ export const RecommendationsPage = () => {
 
             <label>
               Как часто вы готовы поливать растения
-              <select value={answers.wateringPreference} onChange={(event) => updateAnswer('wateringPreference', event.target.value as RecommendationAnswers['wateringPreference'])}>
+              <select
+                value={answers.wateringPreference}
+                required
+                onChange={(event) => updateAnswer('wateringPreference', event.target.value as RecommendationFormAnswers['wateringPreference'])}
+              >
+                <option value="" disabled>Выберите частоту</option>
                 <option value="often">Часто</option>
                 <option value="weekly">Примерно раз в неделю</option>
                 <option value="rarely">Редко</option>
@@ -110,7 +161,12 @@ export const RecommendationsPage = () => {
 
             <label>
               Главный приоритет
-              <select value={answers.priority} onChange={(event) => updateAnswer('priority', event.target.value as RecommendationAnswers['priority'])}>
+              <select
+                value={answers.priority}
+                required
+                onChange={(event) => updateAnswer('priority', event.target.value as RecommendationFormAnswers['priority'])}
+              >
+                <option value="" disabled>Выберите приоритет</option>
                 <option value="easy_care">Неприхотливость</option>
                 <option value="decorative">Красивый внешний вид</option>
                 <option value="safe">Безопасность</option>
@@ -120,10 +176,15 @@ export const RecommendationsPage = () => {
 
             <label>
               Какая температура обычно в помещении?
-              <select value={answers.temperature} onChange={(event) => updateAnswer('temperature', event.target.value as RecommendationAnswers['temperature'])}>
-                <option value="high">Высокая — дома часто тепло или жарко</option>
-                <option value="medium">Средняя — обычная комнатная температура</option>
-                <option value="low">Низкая — дома прохладно</option>
+              <select
+                value={answers.temperature}
+                required
+                onChange={(event) => updateAnswer('temperature', event.target.value as RecommendationFormAnswers['temperature'])}
+              >
+                <option value="" disabled>Выберите температуру</option>
+                <option value="high">Высокая - дома часто тепло или жарко</option>
+                <option value="medium">Средняя - обычная комнатная температура</option>
+                <option value="low">Низкая - дома прохладно</option>
               </select>
             </label>
           </div>
@@ -137,9 +198,11 @@ export const RecommendationsPage = () => {
             Учитывать мою текущую коллекцию
           </label>
 
+          {formError && <p className="form-error">{formError}</p>}
+
           <div className="form-actions">
-            <button className="button" type="submit">Подобрать растения</button>
-            <button className="button button--ghost" type="button" onClick={handleReset}>Сбросить подбор</button>
+            <button className="button button--primary" type="submit">Подобрать растения</button>
+            <button className="button button--secondary" type="button" onClick={handleReset}>Сбросить подбор</button>
           </div>
         </section>
       </form>
@@ -147,7 +210,7 @@ export const RecommendationsPage = () => {
       {!showResults && (
         <section className="soft-panel">
           <h2>Анкета ещё не заполнена</h2>
-          <p>Выберите условия дома и предпочтения, затем нажмите «Подобрать растения». Результаты будут рассчитаны без сервера и внешних API.</p>
+          <p>Выберите условия дома и предпочтения, затем нажмите «Подобрать растения». Результаты появятся только после запуска подбора.</p>
         </section>
       )}
 
@@ -165,9 +228,9 @@ export const RecommendationsPage = () => {
             <p>Мы сравнили ваши ответы со всеми растениями из справочника и отсортировали их по проценту совпадения.</p>
             <p>При подборе учитываются освещение, безопасность, опыт ухода, частота полива, главный приоритет, температура в помещении и ваша текущая коллекция.</p>
             <div className="legend">
-              <span className="recommendation-status recommendation-status--excellent">75–100% — отлично подходит</span>
-              <span className="recommendation-status recommendation-status--medium">50–74% — подходит с оговорками</span>
-              <span className="recommendation-status recommendation-status--low">0–49% — скорее не подходит</span>
+              <span className="recommendation-status recommendation-status--excellent">75-100% - отлично подходит</span>
+              <span className="recommendation-status recommendation-status--medium">50-74% - подходит с оговорками</span>
+              <span className="recommendation-status recommendation-status--low">0-49% - скорее не подходит</span>
             </div>
           </div>
 
@@ -224,8 +287,8 @@ export const RecommendationsPage = () => {
                     </div>
 
                     <div className="card-actions">
-                      <Link className="button button--ghost" to={`/plants/${plant.id}`}>Открыть карточку</Link>
-                      <button className="button" type="button" onClick={() => openCollectionForm(plant.id)}>Добавить в коллекцию</button>
+                      <Link className="button button--secondary" to={`/plants/${plant.id}`}>Открыть карточку</Link>
+                      <button className="button button--primary" type="button" onClick={() => openCollectionForm(plant.id)}>Добавить в коллекцию</button>
                     </div>
                   </div>
                 </article>

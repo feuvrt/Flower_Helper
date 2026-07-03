@@ -3,6 +3,7 @@ import type { UserPlant } from '../types/plant';
 const FAVORITES_KEY = 'plant-care.favoritePlantIds';
 const COLLECTION_KEY = 'plant-care.userPlants';
 const THEME_KEY = 'plant-care.theme';
+const SHOWN_NOTIFICATIONS_KEY = 'plantCareShownNotifications';
 
 const readJson = <T,>(key: string, fallback: T): T => {
   try {
@@ -32,7 +33,9 @@ export const normalizeUserPlant = (plant: UserPlant | (Partial<UserPlant> & { pl
       customPlant: plant.customPlant,
       notes: plant.notes ?? '',
       wateringReminderEnabled: plant.wateringReminderEnabled ?? true,
+      wateringReminderTime: plant.wateringReminderTime ?? '09:00',
       repottingReminderEnabled: plant.repottingReminderEnabled ?? true,
+      repottingReminderTime: plant.repottingReminderTime ?? '09:00',
     } as UserPlant;
   }
 
@@ -44,7 +47,9 @@ export const normalizeUserPlant = (plant: UserPlant | (Partial<UserPlant> & { pl
     customPlant: undefined,
     notes: plant.notes ?? '',
     wateringReminderEnabled: plant.wateringReminderEnabled ?? true,
+    wateringReminderTime: plant.wateringReminderTime ?? '09:00',
     repottingReminderEnabled: plant.repottingReminderEnabled ?? true,
+    repottingReminderTime: plant.repottingReminderTime ?? '09:00',
   } as UserPlant;
 };
 
@@ -58,8 +63,11 @@ export const storage = {
   setCollection: (plants: UserPlant[]) => writeJson(COLLECTION_KEY, plants),
   getTheme: () => localStorage.getItem(THEME_KEY) ?? 'light',
   setTheme: (theme: 'light' | 'dark') => localStorage.setItem(THEME_KEY, theme),
+  getShownNotifications: () => readJson<string[]>(SHOWN_NOTIFICATIONS_KEY, []),
+  setShownNotifications: (keys: string[]) => writeJson(SHOWN_NOTIFICATIONS_KEY, keys),
   resetUserData: () => {
     localStorage.removeItem(FAVORITES_KEY);
     localStorage.removeItem(COLLECTION_KEY);
+    localStorage.removeItem(SHOWN_NOTIFICATIONS_KEY);
   },
 };

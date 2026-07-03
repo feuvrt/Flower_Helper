@@ -19,6 +19,7 @@ export const CollectionPage = () => {
     exportCollection,
     importCollection,
     resetUserData,
+    checkNotifications,
   } = useAppContext();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -31,16 +32,16 @@ export const CollectionPage = () => {
           <p>Здесь хранятся заметки, даты ухода и напоминания для ваших растений.</p>
         </div>
         <div className="toolbar">
-          <button className="button" type="button" onClick={() => openCollectionForm()}>
-            Добавить растение из справочника
+          <button className="button button--primary" type="button" onClick={() => openCollectionForm()}>
+            Добавить из справочника
           </button>
           <button className="button button--custom" type="button" onClick={openCustomPlantForm}>
             + Добавить собственное растение
           </button>
-          <button className="button button--ghost" type="button" onClick={exportCollection}>
+          <button className="button button--secondary" type="button" onClick={exportCollection}>
             Экспорт JSON
           </button>
-          <button className="button button--ghost" type="button" onClick={() => inputRef.current?.click()}>
+          <button className="button button--secondary" type="button" onClick={() => inputRef.current?.click()}>
             Импорт JSON
           </button>
           <button className="button button--danger" type="button" onClick={resetUserData}>
@@ -60,7 +61,7 @@ export const CollectionPage = () => {
         </div>
       </div>
 
-      <ReminderList tasks={careTasks} />
+      <ReminderList tasks={careTasks} onCheckNotifications={() => checkNotifications(true)} />
 
       {collection.length > 0 ? (
         <section className="collection-list">
@@ -86,7 +87,7 @@ export const CollectionPage = () => {
           text="Добавьте первое растение из справочника или создайте собственное растение вручную."
           action={
             <div className="hero__actions">
-              <Link className="button" to="/catalog">Открыть справочник</Link>
+              <Link className="button button--primary" to="/catalog">Открыть справочник</Link>
               <button className="button button--custom" type="button" onClick={openCustomPlantForm}>
                 + Добавить собственное растение
               </button>

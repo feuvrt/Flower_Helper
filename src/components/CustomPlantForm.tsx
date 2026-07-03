@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { CustomPlantInfo, LightType, UserPlant } from '../types/plant';
 import { todayIso } from '../utils/dates';
+import { DEFAULT_REMINDER_TIME } from '../utils/reminders';
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/webp', 'image/jpeg', 'image/png'];
@@ -57,8 +58,10 @@ export const CustomPlantForm = ({ existingPlant, onSubmit, onCancel }: CustomPla
   const [notes, setNotes] = useState(existingPlant?.notes ?? '');
   const [lastWateredAt, setLastWateredAt] = useState(existingPlant?.lastWateredAt ?? todayIso());
   const [wateringReminderEnabled, setWateringReminderEnabled] = useState(existingPlant?.wateringReminderEnabled ?? true);
+  const [wateringReminderTime, setWateringReminderTime] = useState(existingPlant?.wateringReminderTime ?? DEFAULT_REMINDER_TIME);
   const [lastRepottedAt, setLastRepottedAt] = useState(existingPlant?.lastRepottedAt ?? todayIso());
   const [repottingReminderEnabled, setRepottingReminderEnabled] = useState(existingPlant?.repottingReminderEnabled ?? true);
+  const [repottingReminderTime, setRepottingReminderTime] = useState(existingPlant?.repottingReminderTime ?? DEFAULT_REMINDER_TIME);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const handleImageChange = (file?: File) => {
@@ -120,9 +123,11 @@ export const CustomPlantForm = ({ existingPlant, onSubmit, onCancel }: CustomPla
       lastWateredAt: lastWateredAt || addedAt,
       wateringIntervalDays: wateringDays,
       wateringReminderEnabled,
+      wateringReminderTime,
       lastRepottedAt: lastRepottedAt || addedAt,
       repottingIntervalMonths: repottingMonths,
       repottingReminderEnabled,
+      repottingReminderTime,
     });
   };
 
@@ -223,8 +228,16 @@ export const CustomPlantForm = ({ existingPlant, onSubmit, onCancel }: CustomPla
             <input type="date" value={lastWateredAt} onInput={(event) => setLastWateredAt(event.currentTarget.value)} onChange={(event) => setLastWateredAt(event.target.value)} />
           </label>
           <label>
+            Время напоминания о поливе
+            <input type="time" value={wateringReminderTime} onChange={(event) => setWateringReminderTime(event.target.value)} />
+          </label>
+          <label>
             Дата последней пересадки
             <input type="date" value={lastRepottedAt} onInput={(event) => setLastRepottedAt(event.currentTarget.value)} onChange={(event) => setLastRepottedAt(event.target.value)} />
+          </label>
+          <label>
+            Время напоминания о пересадке
+            <input type="time" value={repottingReminderTime} onChange={(event) => setRepottingReminderTime(event.target.value)} />
           </label>
           <label className="checkbox-line">
             <input type="checkbox" checked={wateringReminderEnabled} onChange={(event) => setWateringReminderEnabled(event.target.checked)} />
@@ -246,10 +259,10 @@ export const CustomPlantForm = ({ existingPlant, onSubmit, onCancel }: CustomPla
       </section>
 
       <div className="form-actions">
-        <button className="button button--ghost" type="button" onClick={onCancel}>
+        <button className="button button--secondary" type="button" onClick={onCancel}>
           Отмена
         </button>
-        <button className="button" type="submit">
+        <button className="button button--primary" type="submit">
           {existingPlant ? 'Сохранить собственное растение' : 'Добавить собственное растение'}
         </button>
       </div>

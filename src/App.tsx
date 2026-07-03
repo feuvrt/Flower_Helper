@@ -1,12 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { HashRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { CollectionForm } from './components/CollectionForm';
 import { CustomPlantForm } from './components/CustomPlantForm';
 import { Layout } from './components/Layout';
 import { Modal } from './components/Modal';
 import type { ToastMessage } from './components/Toast';
 import { getUserPlantDisplay } from './utils/plants';
-import { getCareTasks } from './utils/reminders';
+import { getCareTasks, getNotificationKey, getNotificationTasks } from './utils/reminders';
 import { normalizeCollection, storage } from './utils/storage';
 import type { UserPlant } from './types/plant';
 import { todayIso } from './utils/dates';
@@ -21,6 +21,7 @@ export type AppContextValue = {
   favoritePlantIds: string[];
   collection: UserPlant[];
   careTasks: ReturnType<typeof getCareTasks>;
+  notificationPermission: NotificationPermission | 'unsupported';
   toggleFavorite: (plantId: string) => void;
   openCollectionForm: (plantId?: string) => void;
   openCustomPlantForm: () => void;
@@ -31,6 +32,8 @@ export type AppContextValue = {
   exportCollection: () => void;
   importCollection: (file: File) => void;
   resetUserData: () => void;
+  requestNotificationPermission: () => Promise<void>;
+  checkNotifications: (manual?: boolean) => void;
   notify: (text: string, type?: ToastMessage['type']) => void;
 };
 
@@ -46,6 +49,10 @@ const AppContent = () => {
   const [editingCatalogPlant, setEditingCatalogPlant] = useState<UserPlant | undefined>();
   const [editingCustomPlant, setEditingCustomPlant] = useState<UserPlant | undefined>();
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const notificationsSupported = typeof window !== 'undefined' && 'Notification' in window;
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>(
+    notificationsSupported ? Notification.permission : 'unsupported',
+  );
   const navigate = useNavigate();
 
   const careTasks = useMemo(() => getCareTasks(collection), [collection]);
@@ -65,11 +72,54 @@ const AppContent = () => {
     setCustomPlantFormOpen(false);
   };
 
-  const notify = (text: string, type: ToastMessage['type'] = 'success') => {
+  const notify = useCallback((text: string, type: ToastMessage['type'] = 'success') => {
     const id = crypto.randomUUID();
     setToasts((items) => [...items, { id, text, type }]);
     window.setTimeout(() => setToasts((items) => items.filter((item) => item.id !== id)), 3200);
-  };
+  }, []);
+
+  const checkNotifications = useCallback((manual = false) => {
+    const tasksForNotification = getNotificationTasks(careTasks, collection);
+    const shownKeys = storage.getShownNotifications();
+    const newTasks = tasksForNotification.filter((task) => !shownKeys.includes(getNotificationKey(task)));
+
+    if (newTasks.length === 0) {
+      if (manual) notify('Сейчас нет задач для уведомления.', 'warning');
+      return;
+    }
+
+    if (notificationsSupported && notificationPermission === 'granted') {
+      new Notification('Помощник по уходу за растениями', {
+        body: `Актуальных задач: ${newTasks.length}. Проверьте полив и пересадку.`,
+      });
+    }
+
+    notify(`Актуальных задач для уведомления: ${newTasks.length}.`);
+    storage.setShownNotifications([...shownKeys, ...newTasks.map(getNotificationKey)]);
+  }, [careTasks, collection, notificationPermission, notificationsSupported, notify]);
+
+  const requestNotificationPermission = useCallback(async () => {
+    if (!notificationsSupported) {
+      setNotificationPermission('unsupported');
+      notify('Браузерные уведомления не поддерживаются. Задачи останутся внутри приложения.', 'warning');
+      return;
+    }
+
+    const result = await Notification.requestPermission();
+    setNotificationPermission(result);
+    if (result === 'granted') {
+      notify('Уведомления разрешены.');
+      window.setTimeout(() => checkNotifications(false), 0);
+    } else {
+      notify('Браузерные уведомления не разрешены. Задачи будут видны в приложении.', 'warning');
+    }
+  }, [checkNotifications, notificationsSupported, notify]);
+
+  useEffect(() => {
+    checkNotifications(false);
+    const timer = window.setInterval(() => checkNotifications(false), 60_000);
+    return () => window.clearInterval(timer);
+  }, [checkNotifications]);
 
   const toggleFavorite = (plantId: string) => {
     setFavoritePlantIds((ids) => {
@@ -157,6 +207,7 @@ const AppContent = () => {
     favoritePlantIds,
     collection,
     careTasks,
+    notificationPermission,
     toggleFavorite,
     openCollectionForm,
     openCustomPlantForm,
@@ -176,6 +227,8 @@ const AppContent = () => {
     exportCollection,
     importCollection,
     resetUserData,
+    requestNotificationPermission,
+    checkNotifications,
     notify,
   };
 
@@ -209,7 +262,7 @@ export const useAppContext = () => {
 };
 
 const App = () => (
-  <BrowserRouter>
+  <HashRouter>
     <Routes>
       <Route element={<AppContent />}>
         <Route path="/" element={<HomePage />} />
@@ -220,7 +273,7 @@ const App = () => (
         <Route path="/recommendations" element={<RecommendationsPage />} />
       </Route>
     </Routes>
-  </BrowserRouter>
+  </HashRouter>
 );
 
 export default App;

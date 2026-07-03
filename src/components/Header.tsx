@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import appIcon from '../assets/app_icon.png';
 
 type HeaderProps = {
   theme: 'light' | 'dark';
@@ -8,7 +9,9 @@ type HeaderProps = {
 export const Header = ({ theme, onToggleTheme }: HeaderProps) => (
   <header className="header">
     <NavLink className="brand" to="/">
-      <span className="brand__mark">🌿</span>
+      <span className="brand__mark">
+        <img src={appIcon} alt="" aria-hidden="true" />
+      </span>
       <span>PlantCare</span>
     </NavLink>
     <nav className="nav" aria-label="Основная навигация">
@@ -18,8 +21,8 @@ export const Header = ({ theme, onToggleTheme }: HeaderProps) => (
       <NavLink to="/favorites">Избранное</NavLink>
       <NavLink to="/collection">Моя коллекция</NavLink>
     </nav>
-    <button className="theme-toggle" type="button" onClick={onToggleTheme}>
-      {theme === 'dark' ? '☀️ Светлая' : '🌙 Тёмная'}
+    <button className="theme-toggle" type="button" onClick={onToggleTheme} aria-label="Переключить тему" title="Переключить тему">
+      {theme === 'dark' ? '☀️' : '🌙'}
     </button>
   </header>
 );

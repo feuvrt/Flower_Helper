@@ -1,4 +1,3 @@
-import { lightLabels } from '../utils/plants';
 import { getNextRepottingDate, getNextWateringDate, getRepottingStatus, getWateringStatus } from '../utils/reminders';
 import { formatDate } from '../utils/dates';
 import type { DisplayPlant, UserPlant } from '../types/plant';
@@ -10,14 +9,6 @@ type UserPlantCardProps = {
   onRepotted: (id: string) => void;
   onEdit: (plant: UserPlant) => void;
   onDelete: (id: string) => void;
-};
-
-const statusText = {
-  overdue: 'просрочено',
-  today: 'сегодня',
-  soon: 'скоро',
-  ok: 'в порядке',
-  done: 'выполнено',
 };
 
 const wateringLabel = {
@@ -44,78 +35,60 @@ export const UserPlantCard = ({ userPlant, plant, onWatered, onRepotted, onEdit,
   const isCustom = userPlant.source === 'custom';
 
   return (
-    <article className="user-card">
-      <div className="user-card__media">
-        {plant.image ? (
-          <img className="user-card__image" src={plant.image} alt={plant.name} />
-        ) : (
-          <div className="plant-image-placeholder plant-image-placeholder--wide" aria-hidden="true">🌿</div>
-        )}
-      </div>
+    <article className="user-card user-card--compact">
+      <div className="user-card__main">
+        <div className="user-card__media">
+          {plant.image ? (
+            <img className="user-card__image" src={plant.image} alt={plant.name} />
+          ) : (
+            <div className="user-card__placeholder" aria-hidden="true">🌿</div>
+          )}
+        </div>
 
-      <div className="user-card__header">
-        <div>
-          <p className="eyebrow">добавлено {formatDate(userPlant.addedAt)}</p>
+        <div className="user-card__summary">
           <div className="title-line">
             <h3>{plant.name}</h3>
             {isCustom && <span className="badge">Собственное растение</span>}
           </div>
           <p>{plant.shortDescription}</p>
-        </div>
-        <div className="status-pills">
-          <span className={`status status--${wateringStatus}`}>💧 {statusText[wateringStatus]}</span>
-          <span className={`status status--${repottingStatus}`}>🪴 {statusText[repottingStatus]}</span>
+          <div className="status-pills">
+            <span className={`status status--${wateringStatus}`}>💧 {wateringLabel[wateringStatus]}</span>
+            <span className={`status status--${repottingStatus}`}>🪴 {repottingLabel[repottingStatus]}</span>
+          </div>
         </div>
       </div>
 
-      <div className="care-description-grid">
-        <section>
-          <h4>Описание</h4>
-          <p>{plant.description}</p>
-        </section>
-        <section>
-          <h4>Освещение</h4>
-          <p>{plant.light.text}</p>
-          <strong>{lightLabels[plant.light.type]}</strong>
-        </section>
-        <section>
-          <h4>Ядовитость</h4>
-          <p>{plant.toxicity.text}</p>
-          <strong>{plant.toxicity.isToxic ? 'Ядовито' : 'Безопасно'}</strong>
-        </section>
-        <section>
-          <h4>Особенности</h4>
-          <p>{plant.features.length > 0 ? plant.features.join('; ') : 'Особенности не указаны.'}</p>
-        </section>
-      </div>
-
-      <p className="note">{userPlant.notes || 'Заметок пока нет.'}</p>
-
-      <div className="care-grid">
+      <div className="user-card__details">
         <div>
-          <h4>{wateringLabel[wateringStatus]}</h4>
-          <p>{plant.watering.text}</p>
-          <p>Частота: раз в {userPlant.wateringIntervalDays} дн.</p>
-          <p>Последний полив: {formatDate(userPlant.lastWateredAt)}</p>
-          <p>Следующий полив: {formatDate(nextWatering)}</p>
+          <span>Добавлено</span>
+          <strong>{formatDate(userPlant.addedAt)}</strong>
         </div>
         <div>
-          <h4>{repottingLabel[repottingStatus]}</h4>
-          <p>{plant.repotting.text}</p>
-          <p>Частота: раз в {userPlant.repottingIntervalMonths} мес.</p>
-          <p>Последняя пересадка: {formatDate(userPlant.lastRepottedAt)}</p>
-          <p>Следующая пересадка: {formatDate(nextRepotting)}</p>
+          <span>Полив</span>
+          <strong>последний - {formatDate(userPlant.lastWateredAt)}, следующий - {formatDate(nextWatering)}</strong>
+        </div>
+        <div>
+          <span>Пересадка</span>
+          <strong>последняя - {formatDate(userPlant.lastRepottedAt)}, следующая - {formatDate(nextRepotting)}</strong>
+        </div>
+        <div>
+          <span>Напоминания</span>
+          <strong>
+            полив - {userPlant.wateringReminderTime ?? '09:00'}, пересадка - {userPlant.repottingReminderTime ?? '09:00'}
+          </strong>
         </div>
       </div>
 
-      <div className="card-actions">
-        <button className="button" type="button" onClick={() => onWatered(userPlant.id)}>
+      {userPlant.notes && <p className="note">{userPlant.notes}</p>}
+
+      <div className="card-actions user-card__actions">
+        <button className="button button--primary" type="button" onClick={() => onWatered(userPlant.id)}>
           Полив выполнен
         </button>
-        <button className="button button--ghost" type="button" onClick={() => onRepotted(userPlant.id)}>
+        <button className="button button--secondary" type="button" onClick={() => onRepotted(userPlant.id)}>
           Пересадка выполнена
         </button>
-        <button className="button button--ghost" type="button" onClick={() => onEdit(userPlant)}>
+        <button className="button button--secondary" type="button" onClick={() => onEdit(userPlant)}>
           Редактировать
         </button>
         <button className="button button--danger" type="button" onClick={() => onDelete(userPlant.id)}>

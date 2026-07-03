@@ -1,6 +1,8 @@
 import { getUserPlantDisplay } from './plants';
-import { addDays, addMonths, daysUntil } from './dates';
+import { addDays, addMonths, daysUntil, todayIso } from './dates';
 import type { CareTask, CareTaskStatus, UserPlant } from '../types/plant';
+
+export const DEFAULT_REMINDER_TIME = '09:00';
 
 export const getNextWateringDate = (plant: UserPlant) => addDays(plant.lastWateredAt || plant.addedAt, plant.wateringIntervalDays);
 
@@ -20,6 +22,20 @@ export const getRepottingStatus = (dateIso: string): CareTaskStatus => {
   if (diff === 0) return 'today';
   if (diff <= 14) return 'soon';
   return 'ok';
+};
+
+const getTaskTitle = (type: CareTask['type'], status: CareTaskStatus) => {
+  if (type === 'watering') {
+    if (status === 'overdue') return 'Полив просрочен';
+    if (status === 'today') return 'Нужно полить сегодня';
+    if (status === 'soon') return 'Полив скоро';
+    return 'Полив не требуется';
+  }
+
+  if (status === 'overdue') return 'Пересадка просрочена';
+  if (status === 'today') return 'Пора пересадить сегодня';
+  if (status === 'soon') return 'Пересадка скоро';
+  return 'Пересадка не требуется';
 };
 
 export const getCareTasks = (collection: UserPlant[], includeOk = false): CareTask[] =>
@@ -43,7 +59,7 @@ export const getCareTasks = (collection: UserPlant[], includeOk = false): CareTa
         type: 'watering',
         dueDate: wateringDate,
         status: wateringStatus,
-        title: wateringStatus === 'overdue' ? 'Полив просрочен' : wateringStatus === 'today' ? 'Нужно полить сегодня' : wateringStatus === 'soon' ? 'Полив скоро' : 'Полив не требуется',
+        title: getTaskTitle('watering', wateringStatus),
         description: `Следующий полив: ${wateringDate}`,
       });
     }
@@ -57,10 +73,31 @@ export const getCareTasks = (collection: UserPlant[], includeOk = false): CareTa
         type: 'repotting',
         dueDate: repottingDate,
         status: repottingStatus,
-        title: repottingStatus === 'overdue' ? 'Пересадка просрочена' : repottingStatus === 'today' ? 'Пора пересадить сегодня' : repottingStatus === 'soon' ? 'Пересадка скоро' : 'Пересадка не требуется',
+        title: getTaskTitle('repotting', repottingStatus),
         description: `Следующая пересадка: ${repottingDate}`,
       });
     }
 
     return tasks;
   }).sort((a, b) => daysUntil(a.dueDate) - daysUntil(b.dueDate));
+
+export const getReminderTimeForTask = (task: CareTask, collection: UserPlant[]) => {
+  const userPlant = collection.find((plant) => plant.id === task.userPlantId);
+  if (!userPlant) return DEFAULT_REMINDER_TIME;
+  return task.type === 'watering'
+    ? userPlant.wateringReminderTime ?? DEFAULT_REMINDER_TIME
+    : userPlant.repottingReminderTime ?? DEFAULT_REMINDER_TIME;
+};
+
+export const isReminderTimeReached = (time: string, now = new Date()) => {
+  const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  return currentTime >= time;
+};
+
+export const getNotificationTasks = (tasks: CareTask[], collection: UserPlant[]) =>
+  tasks.filter((task) => {
+    if (task.status !== 'overdue' && task.status !== 'today') return false;
+    return isReminderTimeReached(getReminderTimeForTask(task, collection));
+  });
+
+export const getNotificationKey = (task: CareTask) => `${task.userPlantId}-${task.type}-${todayIso()}`;

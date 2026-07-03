@@ -46,9 +46,11 @@ export type UserPlant = {
   lastWateredAt: string;
   wateringIntervalDays: number;
   wateringReminderEnabled: boolean;
+  wateringReminderTime?: string;
   lastRepottedAt: string;
   repottingIntervalMonths: number;
   repottingReminderEnabled: boolean;
+  repottingReminderTime?: string;
 };
 
 export type CareTaskType = 'watering' | 'repotting';
