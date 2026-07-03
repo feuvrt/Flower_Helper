@@ -18,6 +18,99 @@
   color: var(--text);
 }
 
+.auth-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.auth-header__email {
+  max-width: 170px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.button--small {
+  min-height: 2.2rem;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.88rem;
+}
+
+.auth-page {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.auth-card,
+.info-banner,
+.migration-banner {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.auth-card {
+  padding: clamp(1.1rem, 3vw, 1.8rem);
+}
+
+.info-banner {
+  padding: 0.85rem 1rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.info-banner--account {
+  border-color: color-mix(in srgb, var(--primary), transparent 70%);
+  background: color-mix(in srgb, var(--primary), transparent 92%);
+  color: var(--primary-strong);
+}
+
+.migration-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.migration-banner__actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.success-box {
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary), transparent 88%);
+  color: var(--primary-strong);
+  font-weight: 800;
+}
+
+.helper-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+@media (max-width: 860px) {
+  .auth-header {
+    justify-content: flex-start;
+  }
+
+  .migration-banner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 :root[data-theme='dark'] {
   color-scheme: dark;
   --bg: #101712;

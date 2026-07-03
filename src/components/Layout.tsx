@@ -5,12 +5,14 @@ import { Toast, type ToastMessage } from './Toast';
 type LayoutProps = {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  userEmail?: string;
+  onSignOut: () => void;
   toasts: ToastMessage[];
 };
 
-export const Layout = ({ theme, onToggleTheme, toasts }: LayoutProps) => (
+export const Layout = ({ theme, onToggleTheme, userEmail, onSignOut, toasts }: LayoutProps) => (
   <div className="app-shell">
-    <Header theme={theme} onToggleTheme={onToggleTheme} />
+    <Header theme={theme} onToggleTheme={onToggleTheme} userEmail={userEmail} onSignOut={onSignOut} />
     <main className="main">
       <Outlet />
     </main>

@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import { getPlants } from '../utils/plants';
 import { todayIso } from '../utils/dates';
 import { DEFAULT_REMINDER_TIME } from '../utils/reminders';
-import type { UserPlant } from '../types/plant';
+import type { Plant, UserPlant } from '../types/plant';
 
 type CollectionFormProps = {
+  plants: Plant[];
   initialPlantId?: string;
   existingPlant?: UserPlant;
   duplicateWarning?: boolean;
@@ -14,8 +14,8 @@ type CollectionFormProps = {
 
 type FormErrors = Partial<Record<'addedAt' | 'wateringIntervalDays' | 'repottingIntervalMonths', string>>;
 
-export const CollectionForm = ({ initialPlantId, existingPlant, duplicateWarning, onSubmit, onCancel }: CollectionFormProps) => {
-  const plantOptions = getPlants();
+export const CollectionForm = ({ plants, initialPlantId, existingPlant, duplicateWarning, onSubmit, onCancel }: CollectionFormProps) => {
+  const plantOptions = plants;
   const initialCatalogPlant = plantOptions.find((plant) => plant.id === (existingPlant?.plantId ?? initialPlantId)) ?? plantOptions[0];
   const [plantId, setPlantId] = useState(existingPlant?.plantId ?? initialCatalogPlant.id);
   const selectedPlant = useMemo(() => plantOptions.find((plant) => plant.id === plantId) ?? initialCatalogPlant, [initialCatalogPlant, plantId, plantOptions]);

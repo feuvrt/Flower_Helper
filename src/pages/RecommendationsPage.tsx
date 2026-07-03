@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { getPlantRecommendations } from '../services/recommendationService';
 import type { RecommendationAnswers, RecommendationResult } from '../types/recommendation';
-import { getPlants } from '../utils/plants';
 
 type RecommendationFormAnswers = {
   experience: RecommendationAnswers['experience'] | '';
@@ -35,8 +34,7 @@ export const RecommendationsPage = () => {
   const [answers, setAnswers] = useState<RecommendationFormAnswers>(defaultAnswers);
   const [showResults, setShowResults] = useState(false);
   const [formError, setFormError] = useState('');
-  const { collection, openCollectionForm } = useAppContext();
-  const plants = getPlants();
+  const { plants, collection, openCollectionForm } = useAppContext();
 
   const recommendationAnswers = useMemo<RecommendationAnswers | null>(() => {
     if (

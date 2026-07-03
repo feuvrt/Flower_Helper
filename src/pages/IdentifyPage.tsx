@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PlantCard } from '../components/PlantCard';
 import { useAppContext } from '../App';
 import { identifyPlantByImage, type NormalizedIdentificationResult, type PlantNetIdentificationResponse } from '../services/plantNetApi';
 import type { Plant } from '../types/plant';
-import { getPlants } from '../utils/plants';
 
 const MAX_FILE_SIZE = 8 * 1024 * 1024;
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png'];
@@ -61,8 +60,7 @@ export const IdentifyPage = () => {
   const [error, setError] = useState('');
   const [identificationResult, setIdentificationResult] = useState<PlantNetIdentificationResponse | null>(null);
   const [matchedPlant, setMatchedPlant] = useState<MatchResult | null>(null);
-  const { favoritePlantIds, toggleFavorite, openCollectionForm, openCustomPlantForm } = useAppContext();
-  const plants = useMemo(() => getPlants(), []);
+  const { plants, favoritePlantIds, toggleFavorite, openCollectionForm, openCustomPlantForm } = useAppContext();
   const bestResult = matchedPlant?.sourceResult ?? identificationResult?.bestResult;
 
   useEffect(() => {

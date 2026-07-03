@@ -4,30 +4,51 @@ export const todayIso = () => toIsoDate(new Date());
 
 export const toIsoDate = (date: Date) => date.toISOString().slice(0, 10);
 
-export const addDays = (dateIso: string, days: number) => {
-  const date = parseIsoDate(dateIso);
+export const parseIsoDate = (value?: string | Date | null) => {
+  if (!value) return null;
+
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const isoDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  const date = isoDateMatch
+    ? new Date(Number(isoDateMatch[1]), Number(isoDateMatch[2]) - 1, Number(isoDateMatch[3]))
+    : new Date(trimmed);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+export const addDays = (dateValue?: string | Date | null, days = 0) => {
+  const date = parseIsoDate(dateValue);
+  if (!date) return '';
+
   date.setDate(date.getDate() + days);
   return toIsoDate(date);
 };
 
-export const addMonths = (dateIso: string, months: number) => {
-  const date = parseIsoDate(dateIso);
+export const addMonths = (dateValue?: string | Date | null, months = 0) => {
+  const date = parseIsoDate(dateValue);
+  if (!date) return '';
+
   date.setMonth(date.getMonth() + months);
   return toIsoDate(date);
 };
 
-export const daysUntil = (dateIso: string) => {
-  const today = parseIsoDate(todayIso()).getTime();
-  const target = parseIsoDate(dateIso).getTime();
-  return Math.round((target - today) / MS_IN_DAY);
+export const daysUntil = (dateValue?: string | Date | null) => {
+  const today = parseIsoDate(todayIso());
+  const target = parseIsoDate(dateValue);
+  if (!today || !target) return Number.POSITIVE_INFINITY;
+
+  return Math.round((target.getTime() - today.getTime()) / MS_IN_DAY);
 };
 
-export const formatDate = (dateIso: string) => {
-  if (!dateIso) return 'не указана';
-  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(parseIsoDate(dateIso));
-};
+export const formatDate = (value?: string | Date | null) => {
+  const date = parseIsoDate(value);
+  if (!date) return 'не указано';
 
-export const parseIsoDate = (dateIso: string) => {
-  const [year, month, day] = dateIso.split('-').map(Number);
-  return new Date(year, month - 1, day);
+  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
 };

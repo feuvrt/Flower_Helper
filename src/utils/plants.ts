@@ -1,4 +1,4 @@
-import { plants } from '../data/plants';
+import { plants as localPlants } from '../data/plants';
 import type { DisplayPlant, LightType, Plant, UserPlant } from '../types/plant';
 
 export const lightLabels: Record<LightType, string> = {
@@ -7,11 +7,11 @@ export const lightLabels: Record<LightType, string> = {
   shade: 'тень',
 };
 
-export const getPlants = () => plants;
+export const getPlants = () => localPlants;
 
-export const getPlantById = (id: string) => plants.find((plant) => plant.id === id);
+export const getPlantById = (id: string, plants: Plant[] = localPlants) => plants.find((plant) => plant.id === id);
 
-export const getUserPlantDisplay = (userPlant: UserPlant): DisplayPlant | undefined => {
+export const getUserPlantDisplay = (userPlant: UserPlant, plants: Plant[] = localPlants): DisplayPlant | undefined => {
   if (userPlant.source === 'custom' && userPlant.customPlant) {
     return {
       id: userPlant.id,
@@ -19,10 +19,11 @@ export const getUserPlantDisplay = (userPlant: UserPlant): DisplayPlant | undefi
     };
   }
 
-  return userPlant.plantId ? getPlantById(userPlant.plantId) : undefined;
+  return userPlant.plantId ? getPlantById(userPlant.plantId, plants) : undefined;
 };
 
-export const filterPlants = (
+export const filterPlantList = (
+  plants: Plant[],
   query: string,
   toxicity: 'all' | 'safe' | 'toxic',
   light: 'all' | LightType,
@@ -43,3 +44,10 @@ export const filterPlants = (
     })
     .sort((a, b) => (sort === 'name' ? a.name.localeCompare(b.name, 'ru') : a.watering.intervalDays - b.watering.intervalDays));
 };
+
+export const filterPlants = (
+  query: string,
+  toxicity: 'all' | 'safe' | 'toxic',
+  light: 'all' | LightType,
+  sort: 'name' | 'watering',
+): Plant[] => filterPlantList(localPlants, query, toxicity, light, sort);

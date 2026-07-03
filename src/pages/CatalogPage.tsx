@@ -2,16 +2,16 @@ import { useMemo, useState } from 'react';
 import { EmptyState } from '../components/EmptyState';
 import { PlantCard } from '../components/PlantCard';
 import { useAppContext } from '../App';
-import { filterPlants } from '../utils/plants';
+import { filterPlantList } from '../utils/plants';
 import type { LightType } from '../types/plant';
 
 export const CatalogPage = () => {
-  const { favoritePlantIds, toggleFavorite, openCollectionForm } = useAppContext();
+  const { plants, favoritePlantIds, toggleFavorite, openCollectionForm } = useAppContext();
   const [query, setQuery] = useState('');
   const [toxicity, setToxicity] = useState<'all' | 'safe' | 'toxic'>('all');
   const [light, setLight] = useState<'all' | LightType>('all');
   const [sort, setSort] = useState<'name' | 'watering'>('name');
-  const visiblePlants = useMemo(() => filterPlants(query, toxicity, light, sort), [query, toxicity, light, sort]);
+  const visiblePlants = useMemo(() => filterPlantList(plants, query, toxicity, light, sort), [plants, query, toxicity, light, sort]);
 
   return (
     <div className="page-stack">

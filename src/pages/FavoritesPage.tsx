@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { PlantCard } from '../components/PlantCard';
 import { useAppContext } from '../App';
-import { getPlants } from '../utils/plants';
 
 export const FavoritesPage = () => {
-  const { favoritePlantIds, toggleFavorite, openCollectionForm } = useAppContext();
-  const favorites = getPlants().filter((plant) => favoritePlantIds.includes(plant.id));
+  const { plants, favoritePlantIds, toggleFavorite, openCollectionForm, syncMessage, storageMode } = useAppContext();
+  const favorites = plants.filter((plant) => favoritePlantIds.includes(plant.id));
 
   return (
     <div className="page-stack">
@@ -14,6 +13,8 @@ export const FavoritesPage = () => {
         <p className="eyebrow">⭐ быстрый доступ</p>
         <h1>Избранное</h1>
       </div>
+
+      <div className={`info-banner info-banner--${storageMode}`}>{syncMessage}</div>
 
       {favorites.length > 0 ? (
         <section className="card-grid">

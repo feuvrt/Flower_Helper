@@ -9,7 +9,13 @@ import { getUserPlantDisplay } from '../utils/plants';
 export const CollectionPage = () => {
   const {
     collection,
+    plants,
     careTasks,
+    syncMessage,
+    storageMode,
+    hasLocalDataToMigrate,
+    migrateLocalData,
+    dismissLocalMigration,
     openCollectionForm,
     openCustomPlantForm,
     editUserPlant,
@@ -61,12 +67,27 @@ export const CollectionPage = () => {
         </div>
       </div>
 
+      <div className={`info-banner info-banner--${storageMode}`}>{syncMessage}</div>
+      {hasLocalDataToMigrate && (
+        <div className="migration-banner">
+          <span>У вас есть локальные данные. Перенести их в аккаунт?</span>
+          <div className="migration-banner__actions">
+            <button className="button button--primary button--small" type="button" onClick={migrateLocalData}>
+              Перенести
+            </button>
+            <button className="button button--secondary button--small" type="button" onClick={dismissLocalMigration}>
+              Оставить на устройстве
+            </button>
+          </div>
+        </div>
+      )}
+
       <ReminderList tasks={careTasks} onCheckNotifications={() => checkNotifications(true)} />
 
       {collection.length > 0 ? (
         <section className="collection-list">
           {collection.map((userPlant) => {
-            const plant = getUserPlantDisplay(userPlant);
+            const plant = getUserPlantDisplay(userPlant, plants);
             if (!plant) return null;
             return (
               <UserPlantCard

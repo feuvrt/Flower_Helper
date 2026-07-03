@@ -28,10 +28,10 @@ export const HomePage = () => {
           </p>
           <div className="hero__actions">
             <Link className="button button--primary" to="/catalog">Открыть справочник</Link>
-            <Link className="button button--custom" to="/recommendations">Подобрать растение</Link>
-            <Link className="button button--secondary" to="/identify">Распознать по фото</Link>
-            <Link className="button button--secondary" to="/collection">Моя коллекция</Link>
-            <Link className="button button--secondary" to="/favorites">Избранное</Link>
+            <Link className="button button--primary" to="/recommendations">Подобрать растение</Link>
+            <Link className="button button--primary" to="/identify">Распознать по фото</Link>
+            <Link className="button button--custom" to="/collection">Моя коллекция</Link>
+            <Link className="button button--custom" to="/favorites">Избранное</Link>
           </div>
         </div>
         <div className="hero__visual">
@@ -42,7 +42,7 @@ export const HomePage = () => {
       <section className="stats-grid" aria-label="Статистика">
         <article><span>💚</span><strong>{collection.length}</strong><p>растений в коллекции</p></article>
         <article><span>⭐</span><strong>{favoritePlantIds.length}</strong><p>в избранном</p></article>
-        <article><span>💧</span><strong>{urgentTasks.length}</strong><p>актуальных задач</p></article>
+        <article><span>❗</span><strong>{urgentTasks.length}</strong><p>актуальных задач</p></article>
       </section>
 
       <section className="notification-banner">

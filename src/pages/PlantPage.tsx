@@ -2,12 +2,11 @@ import { Link, useParams } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { PlantDetails } from '../components/PlantDetails';
 import { useAppContext } from '../App';
-import { getPlantById } from '../utils/plants';
 
 export const PlantPage = () => {
   const { id } = useParams();
-  const { favoritePlantIds, toggleFavorite, openCollectionForm } = useAppContext();
-  const plant = id ? getPlantById(id) : undefined;
+  const { plants, favoritePlantIds, toggleFavorite, openCollectionForm } = useAppContext();
+  const plant = id ? plants.find((item) => item.id === id) : undefined;
 
   if (!plant) {
     return (

@@ -33,6 +33,9 @@ export const UserPlantCard = ({ userPlant, plant, onWatered, onRepotted, onEdit,
   const wateringStatus = getWateringStatus(nextWatering);
   const repottingStatus = getRepottingStatus(nextRepotting);
   const isCustom = userPlant.source === 'custom';
+  const addedAtText = formatDate(userPlant.addedAt);
+  const lastWateredText = formatDate(userPlant.lastWateredAt);
+  const lastRepottedText = formatDate(userPlant.lastRepottedAt);
 
   return (
     <article className="user-card user-card--compact">
@@ -61,15 +64,15 @@ export const UserPlantCard = ({ userPlant, plant, onWatered, onRepotted, onEdit,
       <div className="user-card__details">
         <div>
           <span>Добавлено</span>
-          <strong>{formatDate(userPlant.addedAt)}</strong>
+          <strong>{addedAtText === 'не указано' ? 'Дата добавления не указана' : addedAtText}</strong>
         </div>
         <div>
           <span>Полив</span>
-          <strong>последний - {formatDate(userPlant.lastWateredAt)}, следующий - {formatDate(nextWatering)}</strong>
+          <strong>последний - {lastWateredText === 'не указано' ? 'Полив ещё не отмечен' : lastWateredText}, следующий - {formatDate(nextWatering)}</strong>
         </div>
         <div>
           <span>Пересадка</span>
-          <strong>последняя - {formatDate(userPlant.lastRepottedAt)}, следующая - {formatDate(nextRepotting)}</strong>
+          <strong>последняя - {lastRepottedText === 'не указано' ? 'Пересадка ещё не отмечена' : lastRepottedText}, следующая - {formatDate(nextRepotting)}</strong>
         </div>
         <div>
           <span>Напоминания</span>
