@@ -135,7 +135,7 @@ export const IdentifyPage = () => {
         <div>
           <p className="eyebrow">🔍 фото растения</p>
           <h1>Распознать растение</h1>
-          <p>Загрузите фото растения, а Pl@ntNet попробует определить его по изображению.</p>
+          <p></p>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ export const IdentifyPage = () => {
         <div className="identify-panel">
           <div>
             <h2>Загрузите фото</h2>
-            <p>Лучше всего подходят чёткие фотографии листа, цветка или всего растения крупным планом. Формат: JPG или PNG.</p>
+            <p>Формат: JPG или PNG.</p>
           </div>
 
           <div
@@ -155,7 +155,7 @@ export const IdentifyPage = () => {
               <img className="identify-preview" src={previewUrl} alt="Выбранное фото растения" />
             ) : (
               <div className="upload-placeholder">
-                <span>🔍🌿</span>
+                <span>🔍</span>
                 <h3>Загрузите фото растения</h3>
                 <p>Перетащите изображение сюда или выберите файл</p>
               </div>
@@ -196,8 +196,7 @@ export const IdentifyPage = () => {
             )}
           </div>
 
-          <p className="hint-text">Распознавание работает через Pl@ntNet API. В учебной версии запрос отправляется напрямую из браузера.</p>
-          <p className="hint-text">Для production-версии API-запрос лучше вынести на сервер, чтобы скрыть API-ключ.</p>
+          <p className="hint-text">Распознавание работает через Pl@ntNet API.</p>
         </div>
 
         <div className="identify-panel identify-panel--result">
@@ -205,7 +204,7 @@ export const IdentifyPage = () => {
 
           {!isLoading && !identificationResult && !error && (
             <div className="identify-empty">
-              <span>🔍🌿</span>
+              <span>❔</span>
               <p>Здесь будет результат распознавания растения</p>
             </div>
           )}

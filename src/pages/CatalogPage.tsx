@@ -16,15 +16,15 @@ export const CatalogPage = () => {
   return (
     <div className="page-stack">
       <div className="page-title">
-        <p className="eyebrow">12 растений для старта</p>
+        <p className="eyebrow">🔎 поиск</p>
         <h1>Справочник растений</h1>
-        <p>Найдите растение, изучите базовый уход и добавьте его в личную коллекцию.</p>
+        <p>Найдите растение, изучите уход и добавьте его в личную коллекцию.</p>
       </div>
 
       <section className="filters">
         <label>
           Поиск
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Например, монстера" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Например, кактус" />
         </label>
         <label>
           Ядовитость

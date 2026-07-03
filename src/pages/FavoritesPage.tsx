@@ -31,7 +31,7 @@ export const FavoritesPage = () => {
         <EmptyState
           icon="⭐"
           title="Пока нет избранных растений"
-          text="Добавьте растения из справочника, чтобы быстро возвращаться к ним позже."
+          text="Добавьте растения из справочника, чтобы не потерять!"
           action={<Link className="button" to="/catalog">Открыть справочник</Link>}
         />
       )}

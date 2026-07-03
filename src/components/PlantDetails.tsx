@@ -44,7 +44,7 @@ export const PlantDetails = ({ plant, isFavorite, onToggleFavorite, onAddToColle
         <strong>{lightLabels[plant.light.type]}</strong>
       </section>
       <section>
-        <h2>🪴 Пересадка</h2>
+        <h2>🌱 Пересадка</h2>
         <p>{plant.repotting.text}</p>
         <strong>Ориентир: раз в {plant.repotting.intervalMonths} мес.</strong>
       </section>

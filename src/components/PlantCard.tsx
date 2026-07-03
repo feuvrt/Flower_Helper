@@ -22,7 +22,7 @@ export const PlantCard = ({ plant, isFavorite, onToggleFavorite, onAddToCollecti
     <div className="plant-card__content">
       <div className="plant-card__top">
         <div>
-          <p className="eyebrow">🪴 комнатное растение</p>
+          <p className="eyebrow">комнатное растение</p>
           <h3>{plant.name}</h3>
         </div>
         <button className={`favorite-button ${isFavorite ? 'is-active' : ''}`} type="button" onClick={() => onToggleFavorite(plant.id)}>

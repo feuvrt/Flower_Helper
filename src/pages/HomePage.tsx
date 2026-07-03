@@ -20,8 +20,8 @@ export const HomePage = () => {
     <div className="page-stack">
       <section className="hero">
         <div className="hero__content">
-          <p className="eyebrow">🌿 локальный помощник</p>
-          <h1>Уход за растениями без лишней суеты</h1>
+          <p className="eyebrow">🌿помощник любителей растений</p>
+          <h1>Уход за растениями теперь проще</h1>
           <p>
             Справочник, личная коллекция, избранное, подбор растений, распознавание по фото и напоминания о поливе и пересадке.
             Данные остаются в вашем браузере, аккаунт не нужен.
@@ -40,7 +40,7 @@ export const HomePage = () => {
       </section>
 
       <section className="stats-grid" aria-label="Статистика">
-        <article><span>🪴</span><strong>{collection.length}</strong><p>растений в коллекции</p></article>
+        <article><span>💚</span><strong>{collection.length}</strong><p>растений в коллекции</p></article>
         <article><span>⭐</span><strong>{favoritePlantIds.length}</strong><p>в избранном</p></article>
         <article><span>💧</span><strong>{urgentTasks.length}</strong><p>актуальных задач</p></article>
       </section>

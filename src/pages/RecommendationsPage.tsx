@@ -94,9 +94,9 @@ export const RecommendationsPage = () => {
   return (
     <div className="page-stack">
       <div className="page-title">
-        <p className="eyebrow">🌿 rule-based подбор</p>
+        <p className="eyebrow">📝 анкета </p>
         <h1>Подбор растения</h1>
-        <p>Ответьте на несколько вопросов, а приложение рассчитает процент совпадения для каждого растения из справочника.</p>
+        <p>Ответьте на несколько вопросов, чтобы мы рассчитали, что вам может подойти</p>
       </div>
 
       <form className="recommendation-form" onSubmit={handleSubmit}>
@@ -210,7 +210,7 @@ export const RecommendationsPage = () => {
       {!showResults && (
         <section className="soft-panel">
           <h2>Анкета ещё не заполнена</h2>
-          <p>Выберите условия дома и предпочтения, затем нажмите «Подобрать растения». Результаты появятся только после запуска подбора.</p>
+          <p>Выберите условия дома и предпочтения, затем нажмите "Подобрать растения"</p>
         </section>
       )}
 

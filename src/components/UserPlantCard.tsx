@@ -53,7 +53,7 @@ export const UserPlantCard = ({ userPlant, plant, onWatered, onRepotted, onEdit,
           <p>{plant.shortDescription}</p>
           <div className="status-pills">
             <span className={`status status--${wateringStatus}`}>💧 {wateringLabel[wateringStatus]}</span>
-            <span className={`status status--${repottingStatus}`}>🪴 {repottingLabel[repottingStatus]}</span>
+            <span className={`status status--${repottingStatus}`}>🌱 {repottingLabel[repottingStatus]}</span>
           </div>
         </div>
       </div>

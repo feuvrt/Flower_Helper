@@ -27,9 +27,9 @@ export const CollectionPage = () => {
     <div className="page-stack">
       <div className="page-title page-title--with-actions">
         <div>
-          <p className="eyebrow">🪴 домашние растения</p>
+          <p className="eyebrow">💚домашние растения</p>
           <h1>Моя коллекция</h1>
-          <p>Здесь хранятся заметки, даты ухода и напоминания для ваших растений.</p>
+          <p>Здесь хранятся ваши домашние цветочки</p>
         </div>
         <div className="toolbar">
           <button className="button button--primary" type="button" onClick={() => openCollectionForm()}>
