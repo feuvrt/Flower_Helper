@@ -35,6 +35,8 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          VITE_PUBLIC_BASE: /plant-care-assistant/
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3

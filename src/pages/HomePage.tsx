@@ -23,11 +23,13 @@ export const HomePage = () => {
           <p className="eyebrow">🌿 локальный помощник</p>
           <h1>Уход за растениями без лишней суеты</h1>
           <p>
-            Справочник, личная коллекция, избранное, подбор растений и напоминания о поливе и пересадке. Данные остаются в вашем браузере, аккаунт не нужен.
+            Справочник, личная коллекция, избранное, подбор растений, распознавание по фото и напоминания о поливе и пересадке.
+            Данные остаются в вашем браузере, аккаунт не нужен.
           </p>
           <div className="hero__actions">
             <Link className="button button--primary" to="/catalog">Открыть справочник</Link>
             <Link className="button button--custom" to="/recommendations">Подобрать растение</Link>
+            <Link className="button button--secondary" to="/identify">Распознать по фото</Link>
             <Link className="button button--secondary" to="/collection">Моя коллекция</Link>
             <Link className="button button--secondary" to="/favorites">Избранное</Link>
           </div>

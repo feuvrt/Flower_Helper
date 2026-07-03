@@ -14,6 +14,7 @@ import { CatalogPage } from './pages/CatalogPage';
 import { CollectionPage } from './pages/CollectionPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { HomePage } from './pages/HomePage';
+import { IdentifyPage } from './pages/IdentifyPage';
 import { PlantPage } from './pages/PlantPage';
 import { RecommendationsPage } from './pages/RecommendationsPage';
 
@@ -271,6 +272,7 @@ const App = () => (
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/collection" element={<CollectionPage />} />
         <Route path="/recommendations" element={<RecommendationsPage />} />
+        <Route path="/identify" element={<IdentifyPage />} />
       </Route>
     </Routes>
   </HashRouter>
