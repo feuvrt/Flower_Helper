@@ -79,6 +79,12 @@ export const RecommendationsPage = () => {
       return;
     }
 
+    if (plants.length === 0) {
+      setFormError('Справочник растений пуст. Попробуйте обновить страницу или проверить подключение к Supabase.');
+      setShowResults(false);
+      return;
+    }
+
     setFormError('');
     setShowResults(true);
   };

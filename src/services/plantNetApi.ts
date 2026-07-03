@@ -69,12 +69,20 @@ export async function identifyPlantByImage(file: File): Promise<PlantNetIdentifi
   formData.append('images', file);
   formData.append('organs', 'auto');
 
-  const response = await fetch(`https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}&lang=ru&nb-results=5`, {
-    method: 'POST',
-    body: formData,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}&lang=ru&nb-results=5`, {
+      method: 'POST',
+      body: formData,
+    });
+  } catch (error) {
+    console.error('PlantNet request failed:', error);
+    throw new Error('Не удалось подключиться к Pl@ntNet API. Проверьте интернет и попробуйте ещё раз.');
+  }
 
   if (!response.ok) {
+    console.error('PlantNet API error:', response.status, response.statusText);
     throw new Error('Не удалось распознать растение. Попробуйте другое фото.');
   }
 

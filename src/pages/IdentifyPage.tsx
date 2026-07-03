@@ -108,6 +108,16 @@ export const IdentifyPage = () => {
       return;
     }
 
+    if (!ACCEPTED_TYPES.includes(selectedFile.type)) {
+      setError('Можно загрузить только изображение JPG или PNG.');
+      return;
+    }
+
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      setError('Файл слишком большой. Выберите изображение до 8 МБ.');
+      return;
+    }
+
     setLoading(true);
     resetResult();
 

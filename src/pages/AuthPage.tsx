@@ -2,6 +2,20 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../App';
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const getReadableAuthError = (error: unknown) => {
+  const message = error instanceof Error ? error.message : '';
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes('invalid login credentials')) return 'Неверный email или пароль.';
+  if (normalized.includes('email not confirmed')) return 'Email ещё не подтверждён. Проверьте почту.';
+  if (normalized.includes('user already registered')) return 'Пользователь с таким email уже зарегистрирован.';
+  if (normalized.includes('password')) return 'Проверьте пароль: он должен быть не короче 6 символов.';
+  if (normalized.includes('email')) return 'Проверьте email.';
+  return message || 'Не удалось выполнить действие. Попробуйте ещё раз.';
+};
+
 export const AuthPage = () => {
   const { signIn, signUp, authLoading, user } = useAppContext();
   const [email, setEmail] = useState('');
@@ -14,8 +28,20 @@ export const AuthPage = () => {
     setError('');
     setMessage('');
 
-    if (!email.trim()) {
+    const normalizedEmail = email.trim();
+
+    if (!normalizedEmail) {
       setError('Введите email.');
+      return;
+    }
+
+    if (!emailPattern.test(normalizedEmail)) {
+      setError('Введите корректный email, например student@example.com.');
+      return;
+    }
+
+    if (!password) {
+      setError('Введите пароль.');
       return;
     }
 
@@ -27,13 +53,14 @@ export const AuthPage = () => {
     setSubmitting(true);
     try {
       if (mode === 'sign-in') {
-        await signIn(email.trim(), password);
+        await signIn(normalizedEmail, password);
       } else {
-        const info = await signUp(email.trim(), password);
+        const info = await signUp(normalizedEmail, password);
         setMessage(info ?? 'Аккаунт создан. Теперь можно войти.');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Не удалось выполнить действие. Попробуйте ещё раз.');
+      console.error('Auth error:', err);
+      setError(getReadableAuthError(err));
     } finally {
       setSubmitting(false);
     }

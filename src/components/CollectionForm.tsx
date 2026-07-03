@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { todayIso } from '../utils/dates';
+import { parseIsoDate, todayIso } from '../utils/dates';
 import { DEFAULT_REMINDER_TIME } from '../utils/reminders';
 import type { Plant, UserPlant } from '../types/plant';
 
@@ -12,21 +12,35 @@ type CollectionFormProps = {
   onCancel: () => void;
 };
 
-type FormErrors = Partial<Record<'addedAt' | 'wateringIntervalDays' | 'repottingIntervalMonths', string>>;
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+type FormErrors = Partial<
+  Record<
+    | 'plantId'
+    | 'addedAt'
+    | 'lastWateredAt'
+    | 'wateringIntervalDays'
+    | 'wateringReminderTime'
+    | 'lastRepottedAt'
+    | 'repottingIntervalMonths'
+    | 'repottingReminderTime',
+    string
+  >
+>;
 
 export const CollectionForm = ({ plants, initialPlantId, existingPlant, duplicateWarning, onSubmit, onCancel }: CollectionFormProps) => {
   const plantOptions = plants;
   const initialCatalogPlant = plantOptions.find((plant) => plant.id === (existingPlant?.plantId ?? initialPlantId)) ?? plantOptions[0];
-  const [plantId, setPlantId] = useState(existingPlant?.plantId ?? initialCatalogPlant.id);
+  const [plantId, setPlantId] = useState(existingPlant?.plantId ?? initialCatalogPlant?.id ?? '');
   const selectedPlant = useMemo(() => plantOptions.find((plant) => plant.id === plantId) ?? initialCatalogPlant, [initialCatalogPlant, plantId, plantOptions]);
   const [addedAt, setAddedAt] = useState(existingPlant?.addedAt ?? todayIso());
   const [notes, setNotes] = useState(existingPlant?.notes ?? '');
   const [lastWateredAt, setLastWateredAt] = useState(existingPlant?.lastWateredAt ?? todayIso());
-  const [wateringIntervalDays, setWateringIntervalDays] = useState(String(existingPlant?.wateringIntervalDays ?? selectedPlant.watering.intervalDays));
+  const [wateringIntervalDays, setWateringIntervalDays] = useState(String(existingPlant?.wateringIntervalDays ?? selectedPlant?.watering.intervalDays ?? 7));
   const [wateringReminderEnabled, setWateringReminderEnabled] = useState(existingPlant?.wateringReminderEnabled ?? true);
   const [wateringReminderTime, setWateringReminderTime] = useState(existingPlant?.wateringReminderTime ?? DEFAULT_REMINDER_TIME);
   const [lastRepottedAt, setLastRepottedAt] = useState(existingPlant?.lastRepottedAt ?? todayIso());
-  const [repottingIntervalMonths, setRepottingIntervalMonths] = useState(String(existingPlant?.repottingIntervalMonths ?? selectedPlant.repotting.intervalMonths));
+  const [repottingIntervalMonths, setRepottingIntervalMonths] = useState(String(existingPlant?.repottingIntervalMonths ?? selectedPlant?.repotting.intervalMonths ?? 12));
   const [repottingReminderEnabled, setRepottingReminderEnabled] = useState(existingPlant?.repottingReminderEnabled ?? true);
   const [repottingReminderTime, setRepottingReminderTime] = useState(existingPlant?.repottingReminderTime ?? DEFAULT_REMINDER_TIME);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -49,6 +63,13 @@ export const CollectionForm = ({ plants, initialPlantId, existingPlant, duplicat
     if (!addedAt) nextErrors.addedAt = 'Укажите дату добавления.';
     if (!Number.isFinite(wateringDays) || wateringDays <= 0) nextErrors.wateringIntervalDays = 'Интервал полива должен быть больше 0.';
     if (!Number.isFinite(repottingMonths) || repottingMonths <= 0) nextErrors.repottingIntervalMonths = 'Интервал пересадки должен быть больше 0.';
+
+    if (!plantId) nextErrors.plantId = 'Выберите растение из справочника.';
+    if (addedAt && !parseIsoDate(addedAt)) nextErrors.addedAt = 'Дата добавления некорректна.';
+    if (lastWateredAt && !parseIsoDate(lastWateredAt)) nextErrors.lastWateredAt = 'Дата последнего полива некорректна.';
+    if (lastRepottedAt && !parseIsoDate(lastRepottedAt)) nextErrors.lastRepottedAt = 'Дата последней пересадки некорректна.';
+    if (!TIME_PATTERN.test(wateringReminderTime)) nextErrors.wateringReminderTime = 'Время полива должно быть в формате HH:mm.';
+    if (!TIME_PATTERN.test(repottingReminderTime)) nextErrors.repottingReminderTime = 'Время пересадки должно быть в формате HH:mm.';
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -88,6 +109,7 @@ export const CollectionForm = ({ plants, initialPlantId, existingPlant, duplicat
             </option>
           ))}
         </select>
+        {errors.plantId && <span className="field-error">{errors.plantId}</span>}
       </label>
 
       <div className="form-grid">
@@ -99,6 +121,7 @@ export const CollectionForm = ({ plants, initialPlantId, existingPlant, duplicat
         <label>
           Дата последнего полива
           <input type="date" value={lastWateredAt} onInput={(event) => setLastWateredAt(event.currentTarget.value)} onChange={(event) => setLastWateredAt(event.target.value)} />
+          {errors.lastWateredAt && <span className="field-error">{errors.lastWateredAt}</span>}
         </label>
         <label>
           Интервал полива, дней
@@ -115,10 +138,12 @@ export const CollectionForm = ({ plants, initialPlantId, existingPlant, duplicat
         <label>
           Время напоминания о поливе
           <input type="time" value={wateringReminderTime} onChange={(event) => setWateringReminderTime(event.target.value)} />
+          {errors.wateringReminderTime && <span className="field-error">{errors.wateringReminderTime}</span>}
         </label>
         <label>
           Дата последней пересадки
           <input type="date" value={lastRepottedAt} onInput={(event) => setLastRepottedAt(event.currentTarget.value)} onChange={(event) => setLastRepottedAt(event.target.value)} />
+          {errors.lastRepottedAt && <span className="field-error">{errors.lastRepottedAt}</span>}
         </label>
         <label>
           Интервал пересадки, месяцев
@@ -128,6 +153,7 @@ export const CollectionForm = ({ plants, initialPlantId, existingPlant, duplicat
         <label>
           Время напоминания о пересадке
           <input type="time" value={repottingReminderTime} onChange={(event) => setRepottingReminderTime(event.target.value)} />
+          {errors.repottingReminderTime && <span className="field-error">{errors.repottingReminderTime}</span>}
         </label>
       </div>
 

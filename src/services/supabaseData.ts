@@ -73,6 +73,24 @@ const safeDateValue = (value?: string | null) => {
   return date ? toIsoDate(date) : undefined;
 };
 
+const assertUserId = (userId: string) => {
+  if (!userId.trim()) throw new Error('Не удалось синхронизировать данные: пользователь не определён.');
+};
+
+const validateUserPlantForDatabase = (plant: UserPlant) => {
+  if (plant.source === 'catalog' && !plant.plantId?.trim()) {
+    throw new Error('Не удалось сохранить растение из справочника: не указан plant_id.');
+  }
+
+  if (plant.source === 'custom' && !plant.customPlant?.name.trim()) {
+    throw new Error('Не удалось сохранить собственное растение: не указано название.');
+  }
+
+  if (plant.source !== 'catalog' && plant.source !== 'custom') {
+    throw new Error('Не удалось сохранить растение: неизвестный источник данных.');
+  }
+};
+
 const mapPlantRow = (row: PlantRow): Plant => {
   const localPlant = localPlantById.get(row.id);
   const image = imageByKey.get(row.image_key ?? '') ?? localPlant?.image ?? '';
@@ -123,6 +141,7 @@ export const loadSupabasePlants = async (): Promise<Plant[]> => {
 
 export const loadSupabaseFavorites = async (userId: string): Promise<string[]> => {
   if (!supabase) return [];
+  assertUserId(userId);
 
   const { data, error } = await supabase.from('user_favorites').select('plant_id').eq('user_id', userId);
   if (error) throw error;
@@ -131,6 +150,8 @@ export const loadSupabaseFavorites = async (userId: string): Promise<string[]> =
 
 export const addSupabaseFavorite = async (userId: string, plantId: string) => {
   if (!supabase) return;
+  assertUserId(userId);
+  if (!plantId.trim()) throw new Error('Не удалось добавить в избранное: растение не выбрано.');
 
   const { data: existing, error: selectError } = await supabase
     .from('user_favorites')
@@ -148,6 +169,8 @@ export const addSupabaseFavorite = async (userId: string, plantId: string) => {
 
 export const removeSupabaseFavorite = async (userId: string, plantId: string) => {
   if (!supabase) return;
+  assertUserId(userId);
+  if (!plantId.trim()) throw new Error('Не удалось удалить из избранного: растение не выбрано.');
 
   const { error } = await supabase.from('user_favorites').delete().eq('user_id', userId).eq('plant_id', plantId);
   if (error) throw error;
@@ -224,6 +247,7 @@ const userPlantToRow = (userId: string, plant: UserPlant) => ({
 
 export const loadSupabaseCollection = async (userId: string): Promise<UserPlant[]> => {
   if (!supabase) return [];
+  assertUserId(userId);
 
   const { data, error } = await supabase.from('user_plants').select('*').eq('user_id', userId).order('added_at', { ascending: false });
   if (error) throw error;
@@ -232,6 +256,8 @@ export const loadSupabaseCollection = async (userId: string): Promise<UserPlant[
 
 export const saveSupabaseUserPlant = async (userId: string, plant: UserPlant) => {
   if (!supabase) return;
+  assertUserId(userId);
+  validateUserPlantForDatabase(plant);
 
   const { error } = await supabase.from('user_plants').upsert(userPlantToRow(userId, plant));
   if (error) throw error;
@@ -239,6 +265,8 @@ export const saveSupabaseUserPlant = async (userId: string, plant: UserPlant) =>
 
 export const deleteSupabaseUserPlant = async (userId: string, plantId: string) => {
   if (!supabase) return;
+  assertUserId(userId);
+  if (!plantId.trim()) throw new Error('Не удалось удалить растение: id растения пустой.');
 
   const { error } = await supabase.from('user_plants').delete().eq('user_id', userId).eq('id', plantId);
   if (error) throw error;
@@ -246,6 +274,7 @@ export const deleteSupabaseUserPlant = async (userId: string, plantId: string) =
 
 export const loadSupabaseSettings = async (userId: string): Promise<{ theme?: 'light' | 'dark' } | null> => {
   if (!supabase) return null;
+  assertUserId(userId);
 
   const { data, error } = await supabase.from('user_settings').select('*').eq('user_id', userId).maybeSingle();
   if (error) throw error;
@@ -254,6 +283,7 @@ export const loadSupabaseSettings = async (userId: string): Promise<{ theme?: 'l
 
 export const saveSupabaseSettings = async (userId: string, settings: { theme: 'light' | 'dark' }) => {
   if (!supabase) return;
+  assertUserId(userId);
 
   const { error } = await supabase.from('user_settings').upsert({ user_id: userId, ...settings }, { onConflict: 'user_id' });
   if (error) throw error;

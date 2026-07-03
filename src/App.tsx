@@ -126,7 +126,8 @@ const AppContent = () => {
           setPlantsSource('local');
           setSyncMessage('Таблица plants пока пустая, используется локальный справочник.');
         }
-      } catch {
+      } catch (error) {
+        console.error('Supabase plants load failed:', error);
         if (!isMounted) return;
         setPlants(getPlants());
         setPlantsSource('local');
@@ -179,7 +180,10 @@ const AppContent = () => {
         const [remoteFavorites, remoteCollection, settings] = await Promise.all([
           loadSupabaseFavorites(user.id),
           loadSupabaseCollection(user.id),
-          loadSupabaseSettings(user.id).catch(() => null),
+          loadSupabaseSettings(user.id).catch((error) => {
+            console.error('Supabase settings load failed:', error);
+            return null;
+          }),
         ]);
 
         if (!isMounted) return;
@@ -192,7 +196,8 @@ const AppContent = () => {
         const localFavorites = storage.getFavorites();
         const localCollection = storage.getCollection();
         setHasLocalDataToMigrate(localFavorites.length > 0 || localCollection.length > 0);
-      } catch {
+      } catch (error) {
+        console.error('Supabase account data load failed:', error);
         if (!isMounted) return;
         setSyncMessage('Ошибка синхронизации. Данные временно сохранены локально.');
         setFavoritePlantIds(storage.getFavorites());
@@ -219,7 +224,10 @@ const AppContent = () => {
     document.documentElement.dataset.theme = theme;
     storage.setTheme(theme);
     if (storageMode === 'account' && user) {
-      saveSupabaseSettings(user.id, { theme }).catch(() => setSyncMessage('Ошибка синхронизации настроек. Тема сохранена локально.'));
+      saveSupabaseSettings(user.id, { theme }).catch((error) => {
+        console.error('Supabase settings save failed:', error);
+        setSyncMessage('Ошибка синхронизации настроек. Тема сохранена локально.');
+      });
     }
   }, [theme, storageMode, user]);
 
@@ -274,7 +282,8 @@ const AppContent = () => {
       setCollection(remoteCollection);
       setHasLocalDataToMigrate(false);
       notify('Локальные данные перенесены в аккаунт.');
-    } catch {
+    } catch (error) {
+      console.error('Supabase local data migration failed:', error);
       notify('Не удалось перенести локальные данные. Попробуйте позже.', 'warning');
     }
   };
@@ -335,7 +344,8 @@ const AppContent = () => {
 
     if (storageMode === 'account' && user) {
       const action = exists ? removeSupabaseFavorite(user.id, plantId) : addSupabaseFavorite(user.id, plantId);
-      action.catch(() => {
+      action.catch((error) => {
+        console.error('Supabase favorite sync failed:', error);
         setSyncMessage('Ошибка синхронизации. Данные временно сохранены локально.');
         notify('Не удалось синхронизировать избранное.', 'warning');
       });
@@ -372,7 +382,8 @@ const AppContent = () => {
             : 'Растение добавлено в мою коллекцию.',
       );
       navigate('/collection');
-    } catch {
+    } catch (error) {
+      console.error('Supabase plant save failed:', error);
       setSyncMessage('Ошибка синхронизации. Данные временно сохранены локально.');
       notify('Не удалось синхронизировать растение с аккаунтом.', 'warning');
     }
@@ -383,7 +394,12 @@ const AppContent = () => {
     if (!plant) return;
     const updated = { ...plant, lastWateredAt: todayIso() };
     setCollection((items) => items.map((item) => (item.id === id ? updated : item)));
-    if (storageMode === 'account' && user) saveSupabaseUserPlant(user.id, updated).catch(() => notify('Не удалось синхронизировать полив.', 'warning'));
+    if (storageMode === 'account' && user) {
+      saveSupabaseUserPlant(user.id, updated).catch((error) => {
+        console.error('Supabase watering sync failed:', error);
+        notify('Не удалось синхронизировать полив.', 'warning');
+      });
+    }
     notify('Полив отмечен выполненным.');
   };
 
@@ -392,7 +408,12 @@ const AppContent = () => {
     if (!plant) return;
     const updated = { ...plant, lastRepottedAt: todayIso() };
     setCollection((items) => items.map((item) => (item.id === id ? updated : item)));
-    if (storageMode === 'account' && user) saveSupabaseUserPlant(user.id, updated).catch(() => notify('Не удалось синхронизировать пересадку.', 'warning'));
+    if (storageMode === 'account' && user) {
+      saveSupabaseUserPlant(user.id, updated).catch((error) => {
+        console.error('Supabase repotting sync failed:', error);
+        notify('Не удалось синхронизировать пересадку.', 'warning');
+      });
+    }
     notify('Пересадка отмечена выполненной.');
   };
 
@@ -402,7 +423,12 @@ const AppContent = () => {
     if (!window.confirm(`Удалить ${name} из коллекции?`)) return;
 
     setCollection((items) => items.filter((item) => item.id !== id));
-    if (storageMode === 'account' && user) deleteSupabaseUserPlant(user.id, id).catch(() => notify('Не удалось синхронизировать удаление.', 'warning'));
+    if (storageMode === 'account' && user) {
+      deleteSupabaseUserPlant(user.id, id).catch((error) => {
+        console.error('Supabase plant delete failed:', error);
+        notify('Не удалось синхронизировать удаление.', 'warning');
+      });
+    }
     notify('Растение удалено из коллекции.', 'warning');
   };
 
@@ -430,7 +456,8 @@ const AppContent = () => {
           for (const plant of nextCollection) await saveSupabaseUserPlant(user.id, plant);
         }
         notify('Коллекция импортирована.');
-      } catch {
+      } catch (error) {
+        console.error('Collection import failed:', error);
         notify('Не удалось импортировать файл. Проверьте формат JSON.', 'warning');
       }
     };

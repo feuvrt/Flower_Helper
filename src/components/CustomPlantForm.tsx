@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react';
 import type { CustomPlantInfo, LightType, UserPlant } from '../types/plant';
-import { todayIso } from '../utils/dates';
+import { parseIsoDate, todayIso } from '../utils/dates';
 import { DEFAULT_REMINDER_TIME } from '../utils/reminders';
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/webp', 'image/jpeg', 'image/png'];
+const MAX_NAME_LENGTH = 60;
+const MAX_DESCRIPTION_LENGTH = 500;
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 type CustomPlantFormProps = {
   existingPlant?: UserPlant;
@@ -23,6 +26,10 @@ type FormErrors = Partial<Record<
   | 'repottingIntervalMonths'
   | 'toxicityText'
   | 'addedAt'
+  | 'lastWateredAt'
+  | 'lastRepottedAt'
+  | 'wateringReminderTime'
+  | 'repottingReminderTime'
   | 'image',
   string
 >>;
@@ -99,6 +106,15 @@ export const CustomPlantForm = ({ existingPlant, onSubmit, onCancel }: CustomPla
     if (!Number.isFinite(repottingMonths) || repottingMonths <= 0) nextErrors.repottingIntervalMonths = 'Интервал пересадки должен быть больше 0.';
     if (!toxicityText.trim()) nextErrors.toxicityText = 'Добавьте описание ядовитости.';
     if (!addedAt) nextErrors.addedAt = 'Дата добавления обязательна.';
+
+    if (name.trim().length > MAX_NAME_LENGTH) nextErrors.name = `Название не должно быть длиннее ${MAX_NAME_LENGTH} символов.`;
+    if (shortDescription.trim().length > MAX_DESCRIPTION_LENGTH) nextErrors.shortDescription = `Краткое описание не должно быть длиннее ${MAX_DESCRIPTION_LENGTH} символов.`;
+    if (description.trim().length > MAX_DESCRIPTION_LENGTH) nextErrors.description = `Описание не должно быть длиннее ${MAX_DESCRIPTION_LENGTH} символов.`;
+    if (addedAt && !parseIsoDate(addedAt)) nextErrors.addedAt = 'Дата добавления некорректна.';
+    if (lastWateredAt && !parseIsoDate(lastWateredAt)) nextErrors.lastWateredAt = 'Дата последнего полива некорректна.';
+    if (lastRepottedAt && !parseIsoDate(lastRepottedAt)) nextErrors.lastRepottedAt = 'Дата последней пересадки некорректна.';
+    if (!TIME_PATTERN.test(wateringReminderTime)) nextErrors.wateringReminderTime = 'Время полива должно быть в формате HH:mm.';
+    if (!TIME_PATTERN.test(repottingReminderTime)) nextErrors.repottingReminderTime = 'Время пересадки должно быть в формате HH:mm.';
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -226,18 +242,22 @@ export const CustomPlantForm = ({ existingPlant, onSubmit, onCancel }: CustomPla
           <label>
             Дата последнего полива
             <input type="date" value={lastWateredAt} onInput={(event) => setLastWateredAt(event.currentTarget.value)} onChange={(event) => setLastWateredAt(event.target.value)} />
+            {errors.lastWateredAt && <span className="field-error">{errors.lastWateredAt}</span>}
           </label>
           <label>
             Время напоминания о поливе
             <input type="time" value={wateringReminderTime} onChange={(event) => setWateringReminderTime(event.target.value)} />
+            {errors.wateringReminderTime && <span className="field-error">{errors.wateringReminderTime}</span>}
           </label>
           <label>
             Дата последней пересадки
             <input type="date" value={lastRepottedAt} onInput={(event) => setLastRepottedAt(event.currentTarget.value)} onChange={(event) => setLastRepottedAt(event.target.value)} />
+            {errors.lastRepottedAt && <span className="field-error">{errors.lastRepottedAt}</span>}
           </label>
           <label>
             Время напоминания о пересадке
             <input type="time" value={repottingReminderTime} onChange={(event) => setRepottingReminderTime(event.target.value)} />
+            {errors.repottingReminderTime && <span className="field-error">{errors.repottingReminderTime}</span>}
           </label>
           <label className="checkbox-line">
             <input type="checkbox" checked={wateringReminderEnabled} onChange={(event) => setWateringReminderEnabled(event.target.checked)} />
