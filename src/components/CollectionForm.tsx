@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { getPlants } from '../services/plantService';
-import { todayIso } from '../utils/dateUtils';
+import { getPlants } from '../utils/plants';
+import { todayIso } from '../utils/dates';
 import type { UserPlant } from '../types/plant';
 
 type CollectionFormProps = {
@@ -52,7 +52,9 @@ export const CollectionForm = ({ initialPlantId, existingPlant, duplicateWarning
 
     onSubmit({
       id: existingPlant?.id ?? crypto.randomUUID(),
+      source: 'catalog',
       plantId,
+      customPlant: undefined,
       addedAt,
       notes,
       lastWateredAt: lastWateredAt || addedAt,

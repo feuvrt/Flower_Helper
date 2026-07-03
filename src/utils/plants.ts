@@ -1,5 +1,5 @@
 import { plants } from '../data/plants';
-import type { LightType, Plant } from '../types/plant';
+import type { DisplayPlant, LightType, Plant, UserPlant } from '../types/plant';
 
 export const lightLabels: Record<LightType, string> = {
   bright_indirect: 'яркий рассеянный свет',
@@ -10,6 +10,17 @@ export const lightLabels: Record<LightType, string> = {
 export const getPlants = () => plants;
 
 export const getPlantById = (id: string) => plants.find((plant) => plant.id === id);
+
+export const getUserPlantDisplay = (userPlant: UserPlant): DisplayPlant | undefined => {
+  if (userPlant.source === 'custom' && userPlant.customPlant) {
+    return {
+      id: userPlant.id,
+      ...userPlant.customPlant,
+    };
+  }
+
+  return userPlant.plantId ? getPlantById(userPlant.plantId) : undefined;
+};
 
 export const filterPlants = (
   query: string,

@@ -1,5 +1,5 @@
-import { getPlantById } from './plantService';
-import { addDays, addMonths, daysUntil } from '../utils/dateUtils';
+import { getUserPlantDisplay } from './plants';
+import { addDays, addMonths, daysUntil } from './dates';
 import type { CareTask, CareTaskStatus, UserPlant } from '../types/plant';
 
 export const getNextWateringDate = (plant: UserPlant) => addDays(plant.lastWateredAt || plant.addedAt, plant.wateringIntervalDays);
@@ -24,7 +24,7 @@ export const getRepottingStatus = (dateIso: string): CareTaskStatus => {
 
 export const getCareTasks = (collection: UserPlant[], includeOk = false): CareTask[] =>
   collection.flatMap((userPlant) => {
-    const plant = getPlantById(userPlant.plantId);
+    const plant = getUserPlantDisplay(userPlant);
     if (!plant) return [];
 
     const wateringDate = getNextWateringDate(userPlant);
@@ -38,7 +38,7 @@ export const getCareTasks = (collection: UserPlant[], includeOk = false): CareTa
       tasks.push({
         id: `${userPlant.id}-watering`,
         userPlantId: userPlant.id,
-        plantId: plant.id,
+        plantId: userPlant.plantId,
         plantName: plant.name,
         type: 'watering',
         dueDate: wateringDate,
@@ -52,7 +52,7 @@ export const getCareTasks = (collection: UserPlant[], includeOk = false): CareTa
       tasks.push({
         id: `${userPlant.id}-repotting`,
         userPlantId: userPlant.id,
-        plantId: plant.id,
+        plantId: userPlant.plantId,
         plantName: plant.name,
         type: 'repotting',
         dueDate: repottingDate,

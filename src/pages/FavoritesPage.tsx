@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { PlantCard } from '../components/PlantCard';
-import { useAppContext } from '../app/App';
-import { getPlants } from '../services/plantService';
+import { useAppContext } from '../App';
+import { getPlants } from '../utils/plants';
 
 export const FavoritesPage = () => {
   const { favoritePlantIds, toggleFavorite, openCollectionForm } = useAppContext();

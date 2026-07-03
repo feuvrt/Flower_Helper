@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { EmptyState } from '../components/EmptyState';
 import { PlantCard } from '../components/PlantCard';
-import { useAppContext } from '../app/App';
-import { filterPlants } from '../services/plantService';
+import { useAppContext } from '../App';
+import { filterPlants } from '../utils/plants';
 import type { LightType } from '../types/plant';
 
 export const CatalogPage = () => {

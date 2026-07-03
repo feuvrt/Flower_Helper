@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { formatDate } from '../utils/dateUtils';
+import { formatDate } from '../utils/dates';
 import type { CareTask } from '../types/plant';
 
 type ReminderListProps = {

@@ -1,7 +1,10 @@
+import type { RecommendationTags } from './recommendation';
+
 export type LightType = 'bright_indirect' | 'partial_shade' | 'shade';
 
 export type Plant = {
   id: string;
+  image: string;
   name: string;
   shortDescription: string;
   description: string;
@@ -22,11 +25,22 @@ export type Plant = {
     text: string;
   };
   features: string[];
+  recommendationTags?: RecommendationTags;
 };
+
+export type UserPlantSource = 'catalog' | 'custom';
+
+export type CustomPlantInfo = Omit<Plant, 'id' | 'image'> & {
+  image?: string;
+};
+
+export type DisplayPlant = Plant | (CustomPlantInfo & { id: string; image?: string });
 
 export type UserPlant = {
   id: string;
-  plantId: string;
+  source: UserPlantSource;
+  plantId?: string;
+  customPlant?: CustomPlantInfo;
   addedAt: string;
   notes: string;
   lastWateredAt: string;
@@ -43,7 +57,7 @@ export type CareTaskStatus = 'overdue' | 'today' | 'soon' | 'ok' | 'done';
 export type CareTask = {
   id: string;
   userPlantId: string;
-  plantId: string;
+  plantId?: string;
   plantName: string;
   type: CareTaskType;
   dueDate: string;

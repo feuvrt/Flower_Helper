@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { lightLabels } from '../services/plantService';
+import { lightLabels } from '../utils/plants';
 import type { Plant } from '../types/plant';
 
 type PlantCardProps = {
@@ -11,6 +11,11 @@ type PlantCardProps = {
 
 export const PlantCard = ({ plant, isFavorite, onToggleFavorite, onAddToCollection }: PlantCardProps) => (
   <article className="plant-card">
+    {plant.image ? (
+      <img className="plant-image" src={plant.image} alt={plant.name} />
+    ) : (
+      <div className="plant-image-placeholder" aria-hidden="true">🌿</div>
+    )}
     <div className="plant-card__top">
       <div>
         <p className="eyebrow">🪴 комнатное растение</p>

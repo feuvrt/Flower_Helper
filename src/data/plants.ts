@@ -1,8 +1,28 @@
 import type { Plant } from '../types/plant';
+import aloeImage from '../assets/flower_images/aloe.webp';
+import anthuriumImage from '../assets/flower_images/anturium.webp';
+import cactusImage from '../assets/flower_images/cactus.webp';
+import chlorophytumImage from '../assets/flower_images/chlorofitum.webp';
+import dracaenaImage from '../assets/flower_images/dracena.webp';
+import ficusImage from '../assets/flower_images/ficus.webp';
+import monsteraImage from '../assets/flower_images/monstera.webp';
+import orchidImage from '../assets/flower_images/orchidea.webp';
+import peperomiaImage from '../assets/flower_images/peperomia.webp';
+import sansevieriaImage from '../assets/flower_images/sansevieria.webp';
+import spathiphyllumImage from '../assets/flower_images/spaifillium.webp';
+import zamioculcasImage from '../assets/flower_images/zamiokulkas.webp';
 
 export const plants: Plant[] = [
   {
     id: 'monstera',
+    image: monsteraImage,
+    recommendationTags: {
+      difficulty: 'medium',
+      size: 'large',
+      decorativeLevel: 3,
+      isPetFriendly: false,
+      temperature: { preferred: 'medium', tolerated: ['medium', 'high'] },
+    },
     name: 'Монстера',
     shortDescription: 'Эффектная лиана с крупными резными листьями.',
     description: 'Монстера хорошо подходит для светлых комнат и быстро становится главным акцентом интерьера. Любит стабильный уход, влажный воздух и простор для роста.',
@@ -14,6 +34,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'sansevieria',
+    image: sansevieriaImage,
+    recommendationTags: {
+      difficulty: 'easy',
+      size: 'medium',
+      decorativeLevel: 2,
+      isPetFriendly: false,
+      temperature: { preferred: 'medium', tolerated: ['medium', 'high'] },
+    },
     name: 'Сансевиерия',
     shortDescription: 'Неприхотливое растение с плотными вертикальными листьями.',
     description: 'Сансевиерия прощает редкие поливы и подходит новичкам. Главное правило: меньше воды, больше терпения.',
@@ -25,6 +53,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'ficus-benjamina',
+    image: ficusImage,
+    recommendationTags: {
+      difficulty: 'medium',
+      size: 'large',
+      decorativeLevel: 3,
+      isPetFriendly: false,
+      temperature: { preferred: 'medium', tolerated: ['medium'] },
+    },
     name: 'Фикус Бенджамина',
     shortDescription: 'Домашнее деревце с мелкими глянцевыми листьями.',
     description: 'Фикус любит постоянство: не стоит часто переставлять его и резко менять режим полива.',
@@ -36,6 +72,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'spathiphyllum',
+    image: spathiphyllumImage,
+    recommendationTags: {
+      difficulty: 'medium',
+      size: 'medium',
+      decorativeLevel: 3,
+      isPetFriendly: false,
+      temperature: { preferred: 'medium', tolerated: ['medium', 'high'] },
+    },
     name: 'Спатифиллум',
     shortDescription: 'Цветущее растение с белыми покрывалами и мягкой листвой.',
     description: 'Спатифиллум любит влажность и быстро показывает нехватку воды поникающими листьями.',
@@ -47,6 +91,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'zamioculcas',
+    image: zamioculcasImage,
+    recommendationTags: {
+      difficulty: 'easy',
+      size: 'medium',
+      decorativeLevel: 2,
+      isPetFriendly: false,
+      temperature: { preferred: 'medium', tolerated: ['medium', 'high'] },
+    },
     name: 'Замиокулькас',
     shortDescription: 'Выносливое растение с плотными блестящими листьями.',
     description: 'Замиокулькас хранит воду в клубнях и спокойно переносит забывчивость. Перелив для него опаснее засухи.',
@@ -58,6 +110,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'chlorophytum',
+    image: chlorophytumImage,
+    recommendationTags: {
+      difficulty: 'easy',
+      size: 'medium',
+      decorativeLevel: 2,
+      isPetFriendly: true,
+      temperature: { preferred: 'medium', tolerated: ['low', 'medium', 'high'] },
+    },
     name: 'Хлорофитум',
     shortDescription: 'Быстрорастущее безопасное растение с длинными полосатыми листьями.',
     description: 'Хлорофитум легко адаптируется и выпускает детки на длинных побегах. Хорош для кухни, детской и рабочего места.',
@@ -69,6 +129,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'cactus',
+    image: cactusImage,
+    recommendationTags: {
+      difficulty: 'easy',
+      size: 'small',
+      decorativeLevel: 2,
+      isPetFriendly: true,
+      temperature: { preferred: 'high', tolerated: ['medium', 'high'] },
+    },
     name: 'Кактус',
     shortDescription: 'Суккулент для солнечных мест и редкого полива.',
     description: 'Кактусы любят свет, воздух и сухой режим. Для них особенно важен рыхлый грунт и осторожный полив.',
@@ -80,6 +148,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'phalaenopsis',
+    image: orchidImage,
+    recommendationTags: {
+      difficulty: 'hard',
+      size: 'medium',
+      decorativeLevel: 3,
+      isPetFriendly: true,
+      temperature: { preferred: 'medium', tolerated: ['medium', 'high'] },
+    },
     name: 'Орхидея фаленопсис',
     shortDescription: 'Популярная орхидея с долгим цветением.',
     description: 'Фаленопсис растет не в обычной земле, а в коре. Его корням нужен воздух, прозрачный горшок и аккуратный режим полива.',
@@ -91,6 +167,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'peperomia',
+    image: peperomiaImage,
+    recommendationTags: {
+      difficulty: 'easy',
+      size: 'small',
+      decorativeLevel: 2,
+      isPetFriendly: true,
+      temperature: { preferred: 'medium', tolerated: ['medium', 'high'] },
+    },
     name: 'Пеперомия',
     shortDescription: 'Компактное растение с декоративными мясистыми листьями.',
     description: 'Пеперомия любит аккуратный полив и небольшой горшок. Хорошо подходит для стола или полки.',
@@ -102,6 +186,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'dracaena',
+    image: dracaenaImage,
+    recommendationTags: {
+      difficulty: 'medium',
+      size: 'large',
+      decorativeLevel: 2,
+      isPetFriendly: false,
+      temperature: { preferred: 'medium', tolerated: ['medium', 'high'] },
+    },
     name: 'Драцена',
     shortDescription: 'Стройное растение с пучками длинных листьев.',
     description: 'Драцена любит умеренный уход, стабильное тепло и мягкий свет. Кончики листьев могут сохнуть от сухого воздуха или жесткой воды.',
@@ -113,6 +205,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'aloe-vera',
+    image: aloeImage,
+    recommendationTags: {
+      difficulty: 'easy',
+      size: 'small',
+      decorativeLevel: 2,
+      isPetFriendly: false,
+      temperature: { preferred: 'high', tolerated: ['medium', 'high'] },
+    },
     name: 'Алоэ вера',
     shortDescription: 'Суккулент с мясистыми листьями и запасом воды.',
     description: 'Алоэ вера любит солнце и редкий полив. В обычной квартире лучше растет в легком грунте для суккулентов.',
@@ -124,6 +224,14 @@ export const plants: Plant[] = [
   },
   {
     id: 'anthurium',
+    image: anthuriumImage,
+    recommendationTags: {
+      difficulty: 'hard',
+      size: 'medium',
+      decorativeLevel: 3,
+      isPetFriendly: false,
+      temperature: { preferred: 'medium', tolerated: ['medium', 'high'] },
+    },
     name: 'Антуриум',
     shortDescription: 'Яркое цветущее растение с глянцевыми листьями.',
     description: 'Антуриум любит тепло, влажность и воздухопроницаемый грунт. При хорошем уходе долго сохраняет декоративные покрывала.',

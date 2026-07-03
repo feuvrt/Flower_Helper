@@ -162,6 +162,12 @@ button {
   box-shadow: none;
 }
 
+.button--custom {
+  background: color-mix(in srgb, var(--accent), transparent 8%);
+  color: #2c260f;
+  box-shadow: 0 10px 24px rgba(168, 126, 28, 0.16);
+}
+
 .favorite-button.is-active {
   background: color-mix(in srgb, var(--accent), transparent 20%);
   color: #30250b;
@@ -378,6 +384,37 @@ textarea:focus {
 .plant-card {
   display: grid;
   gap: 1rem;
+  align-content: start;
+}
+
+.plant-image,
+.details-image,
+.user-card__image,
+.image-preview {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.plant-image,
+.plant-image-placeholder {
+  height: 190px;
+  border-radius: 16px;
+}
+
+.plant-image-placeholder,
+.image-preview--placeholder {
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(145deg, rgba(126, 207, 146, 0.22), rgba(242, 201, 76, 0.18)),
+    var(--surface-soft);
+  color: var(--primary-strong);
+  font-size: 4rem;
+}
+
+.plant-image-placeholder--wide {
+  height: 240px;
 }
 
 .plant-card__top,
@@ -425,6 +462,12 @@ textarea:focus {
   border-radius: 28px;
   background: linear-gradient(145deg, rgba(126, 207, 146, 0.25), rgba(242, 201, 76, 0.22));
   font-size: 7rem;
+}
+
+.details-image {
+  flex: 0 0 340px;
+  height: 320px;
+  border-radius: 28px;
 }
 
 .info-grid {
@@ -484,16 +527,52 @@ textarea:focus {
 }
 
 .care-grid,
+.care-description-grid,
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
+.care-description-grid > section,
 .care-grid > div {
   padding: 1rem;
   border-radius: 16px;
   background: var(--surface-soft);
+}
+
+.care-description-grid h4,
+.care-grid h4 {
+  margin-top: 0;
+}
+
+.user-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.user-card__image {
+  height: 240px;
+  border-radius: 16px;
+}
+
+.title-line {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.9rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent), transparent 24%);
+  color: #30250b;
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .note {
@@ -538,6 +617,29 @@ textarea:focus {
 .form {
   display: grid;
   gap: 1rem;
+}
+
+.form-section {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface-soft), transparent 35%);
+}
+
+.form-section h3 {
+  margin: 0;
+}
+
+.custom-form textarea {
+  min-height: 92px;
+}
+
+.image-preview {
+  height: 220px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
 }
 
 .checkbox-line {
@@ -601,6 +703,144 @@ textarea:focus {
   border-color: color-mix(in srgb, var(--warning), transparent 50%);
 }
 
+.recommendation-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.recommendations {
+  display: grid;
+  gap: 1rem;
+}
+
+.legend,
+.recommendation-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.recommendation-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.recommendation-card {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgba(36, 70, 45, 0.08);
+}
+
+.recommendation-card--excellent {
+  border-color: color-mix(in srgb, var(--primary), transparent 45%);
+}
+
+.recommendation-card--medium {
+  border-color: color-mix(in srgb, var(--warning), transparent 45%);
+}
+
+.recommendation-card--low {
+  border-color: color-mix(in srgb, var(--danger), transparent 55%);
+}
+
+.recommendation-card__image {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.recommendation-card__body {
+  display: grid;
+  gap: 1rem;
+}
+
+.recommendation-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.recommendation-card__header h2 {
+  margin: 0;
+}
+
+.match-box {
+  display: grid;
+  place-items: center;
+  min-width: 118px;
+  min-height: 96px;
+  padding: 0.8rem;
+  border-radius: 18px;
+  background: var(--surface-soft);
+  text-align: center;
+}
+
+.match-box strong {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.match-box span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.recommendation-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.recommendation-status--excellent {
+  background: color-mix(in srgb, var(--primary), transparent 82%);
+  color: var(--primary-strong);
+}
+
+.recommendation-status--medium {
+  background: color-mix(in srgb, var(--warning), transparent 82%);
+  color: var(--warning);
+}
+
+.recommendation-status--low {
+  background: color-mix(in srgb, var(--danger), transparent 86%);
+  color: var(--danger);
+}
+
+.reason-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.reason-grid section {
+  padding: 1rem;
+  border-radius: 16px;
+  background: var(--surface-soft);
+}
+
+.reason-grid h3 {
+  margin: 0 0 0.7rem;
+}
+
+.reason-grid ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 @media (max-width: 860px) {
   .header {
     grid-template-columns: 1fr;
@@ -624,8 +864,20 @@ textarea:focus {
   .card-grid,
   .info-grid,
   .care-grid,
+  .care-description-grid,
+  .recommendation-card,
+  .reason-grid,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .recommendation-card__image {
+    height: 240px;
+    min-height: 240px;
+  }
+
+  .recommendation-card__header {
+    display: grid;
   }
 
   .task {
@@ -639,6 +891,11 @@ textarea:focus {
 
   .plant-visual {
     flex-basis: auto;
+  }
+
+  .details-image {
+    flex-basis: auto;
+    height: 260px;
   }
 }
 

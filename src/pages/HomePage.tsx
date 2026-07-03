@@ -1,12 +1,38 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ReminderList } from '../components/ReminderList';
-import { useNotifications } from '../hooks/useNotifications';
-import { useAppContext } from '../app/App';
+import { useAppContext } from '../App';
 
 export const HomePage = () => {
   const { favoritePlantIds, collection, careTasks } = useAppContext();
-  const { permission, requestPermission } = useNotifications(careTasks);
   const urgentTasks = careTasks.filter((task) => task.status === 'overdue' || task.status === 'today' || task.status === 'soon');
+  const importantTasks = useMemo(() => urgentTasks.filter((task) => task.status === 'overdue' || task.status === 'today'), [urgentTasks]);
+  const notificationsSupported = 'Notification' in window;
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>(
+    notificationsSupported ? Notification.permission : 'unsupported',
+  );
+
+  const requestPermission = async () => {
+    if (!notificationsSupported) {
+      setNotificationPermission('unsupported');
+      return;
+    }
+
+    const result = await Notification.requestPermission();
+    setNotificationPermission(result);
+  };
+
+  useEffect(() => {
+    if (!notificationsSupported || notificationPermission !== 'granted' || importantTasks.length === 0) return;
+
+    const key = `plant-care-notified-${new Date().toISOString().slice(0, 10)}`;
+    if (sessionStorage.getItem(key)) return;
+
+    new Notification('Помощник по уходу за растениями', {
+      body: `Актуальных задач: ${importantTasks.length}. Проверьте полив и пересадку.`,
+    });
+    sessionStorage.setItem(key, 'true');
+  }, [importantTasks, notificationPermission, notificationsSupported]);
 
   return (
     <div className="page-stack">
@@ -19,6 +45,7 @@ export const HomePage = () => {
           </p>
           <div className="hero__actions">
             <Link className="button" to="/catalog">Открыть справочник</Link>
+            <Link className="button button--custom" to="/recommendations">Подобрать растение</Link>
             <Link className="button button--ghost" to="/collection">Моя коллекция</Link>
             <Link className="button button--ghost" to="/favorites">Избранное</Link>
           </div>
@@ -35,7 +62,7 @@ export const HomePage = () => {
         <article><span>💧</span><strong>{urgentTasks.length}</strong><p>актуальных задач</p></article>
       </section>
 
-      {permission !== 'granted' && (
+      {notificationPermission !== 'granted' && (
         <section className="notification-banner">
           <div>
             <h2>Разрешить уведомления</h2>

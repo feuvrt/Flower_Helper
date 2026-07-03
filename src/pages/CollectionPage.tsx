@@ -3,14 +3,15 @@ import { Link } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { ReminderList } from '../components/ReminderList';
 import { UserPlantCard } from '../components/UserPlantCard';
-import { useAppContext } from '../app/App';
-import { getPlantById } from '../services/plantService';
+import { useAppContext } from '../App';
+import { getUserPlantDisplay } from '../utils/plants';
 
 export const CollectionPage = () => {
   const {
     collection,
     careTasks,
     openCollectionForm,
+    openCustomPlantForm,
     editUserPlant,
     markWatered,
     markRepotted,
@@ -31,7 +32,10 @@ export const CollectionPage = () => {
         </div>
         <div className="toolbar">
           <button className="button" type="button" onClick={() => openCollectionForm()}>
-            Добавить растение
+            Добавить растение из справочника
+          </button>
+          <button className="button button--custom" type="button" onClick={openCustomPlantForm}>
+            + Добавить собственное растение
           </button>
           <button className="button button--ghost" type="button" onClick={exportCollection}>
             Экспорт JSON
@@ -61,7 +65,7 @@ export const CollectionPage = () => {
       {collection.length > 0 ? (
         <section className="collection-list">
           {collection.map((userPlant) => {
-            const plant = getPlantById(userPlant.plantId);
+            const plant = getUserPlantDisplay(userPlant);
             if (!plant) return null;
             return (
               <UserPlantCard
@@ -79,8 +83,15 @@ export const CollectionPage = () => {
       ) : (
         <EmptyState
           title="Коллекция пока пустая"
-          text="Добавьте первое растение из справочника или вручную через форму коллекции."
-          action={<Link className="button" to="/catalog">Открыть справочник</Link>}
+          text="Добавьте первое растение из справочника или создайте собственное растение вручную."
+          action={
+            <div className="hero__actions">
+              <Link className="button" to="/catalog">Открыть справочник</Link>
+              <button className="button button--custom" type="button" onClick={openCustomPlantForm}>
+                + Добавить собственное растение
+              </button>
+            </div>
+          }
         />
       )}
     </div>

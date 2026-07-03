@@ -14,6 +14,7 @@ export const Header = ({ theme, onToggleTheme }: HeaderProps) => (
     <nav className="nav" aria-label="Основная навигация">
       <NavLink to="/">Главная</NavLink>
       <NavLink to="/catalog">Справочник</NavLink>
+      <NavLink to="/recommendations">Подбор растения</NavLink>
       <NavLink to="/favorites">Избранное</NavLink>
       <NavLink to="/collection">Моя коллекция</NavLink>
     </nav>

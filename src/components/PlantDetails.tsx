@@ -1,4 +1,4 @@
-import { lightLabels } from '../services/plantService';
+import { lightLabels } from '../utils/plants';
 import type { Plant } from '../types/plant';
 
 type PlantDetailsProps = {
@@ -16,9 +16,11 @@ export const PlantDetails = ({ plant, isFavorite, onToggleFavorite, onAddToColle
         <h1>{plant.name}</h1>
         <p>{plant.description}</p>
       </div>
-      <div className="plant-visual" aria-hidden="true">
-        🪴
-      </div>
+      {plant.image ? (
+        <img className="details-image" src={plant.image} alt={plant.name} />
+      ) : (
+        <div className="plant-visual" aria-hidden="true">🌿</div>
+      )}
     </div>
 
     <div className="details__actions">

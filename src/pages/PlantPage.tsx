@@ -1,8 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { PlantDetails } from '../components/PlantDetails';
-import { useAppContext } from '../app/App';
-import { getPlantById } from '../services/plantService';
+import { useAppContext } from '../App';
+import { getPlantById } from '../utils/plants';
 
 export const PlantPage = () => {
   const { id } = useParams();
